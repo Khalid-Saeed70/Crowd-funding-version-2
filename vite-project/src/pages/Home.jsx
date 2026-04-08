@@ -328,7 +328,7 @@ export default function Home() {
           <p className="text-sm mt-1">
             If you have any doubts or need more details regarding a project, 
             feel free to contact the admin directly at{" "}
-            <b className="text-black">+91 9876543210</b>.
+            <b className="text-black">admin@gmail.com</b>.
           </p>
         </div>
 

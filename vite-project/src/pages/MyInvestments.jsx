@@ -1,38 +1,38 @@
-// import { useEffect, useState } from "react";
-// import API from "../services/api";
+// // import { useEffect, useState } from "react";
+// // import API from "../services/api";
 
-// const MyInvestments = () => {
-//   const [investments, setInvestments] = useState([]);
+// // const MyInvestments = () => {
+// //   const [investments, setInvestments] = useState([]);
 
-//   useEffect(() => {
-//     const fetch = async () => {
-//       try {
-//         const res = await API.get("/investments/my");
-//         setInvestments(res.data.data);
-//       } catch (err) {
-//         console.log(err);
-//       }
-//     };
+// //   useEffect(() => {
+// //     const fetch = async () => {
+// //       try {
+// //         const res = await API.get("/investments/my");
+// //         setInvestments(res.data.data);
+// //       } catch (err) {
+// //         console.log(err);
+// //       }
+// //     };
 
-//     fetch();
-//   }, []);
+// //     fetch();
+// //   }, []);
 
-//   return (
-//     <div className="p-6">
-//       <h1 className="text-xl mb-4">My Investments</h1>
+// //   return (
+// //     <div className="p-6">
+// //       <h1 className="text-xl mb-4">My Investments</h1>
 
-//       {investments.map((inv) => (
-//         <div key={inv._id} className="border p-3 mb-3">
-//           <p>Project: {inv.projectId?.title}</p>
-//           <p>Amount: ₹{inv.amount}</p>
-//           <p>Status: {inv.status}</p>
-//         </div>
-//       ))}
-//     </div>
-//   );
-// };
+// //       {investments.map((inv) => (
+// //         <div key={inv._id} className="border p-3 mb-3">
+// //           <p>Project: {inv.projectId?.title}</p>
+// //           <p>Amount: ₹{inv.amount}</p>
+// //           <p>Status: {inv.status}</p>
+// //         </div>
+// //       ))}
+// //     </div>
+// //   );
+// // };
 
-// export default MyInvestments;
+// // export default MyInvestments;
 import { useEffect, useState } from "react";
 import API from "../services/api";
 
