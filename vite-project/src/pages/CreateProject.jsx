@@ -937,6 +937,227 @@
 //     </div>
 //   );
 // }
+// import { useState, useEffect } from "react";
+// import API from "../services/api";
+// import { useNavigate } from "react-router-dom";
+
+// export default function CreateProject() {
+//   const navigate = useNavigate();
+
+//   // 🔥 USER
+//   const user = JSON.parse(localStorage.getItem("user"));
+
+//   const [form, setForm] = useState({
+//     title: "",
+//     description: "",
+//     category: "",
+//     targetAmount: "",
+//     deadline: "",
+//     phoneNumber: "",
+//     email: "",
+//   });
+
+//   const [categories, setCategories] = useState([]);
+//   const [loading, setLoading] = useState(false);
+
+//   // ✅ Fetch categories
+//   useEffect(() => {
+//     const fetchCategories = async () => {
+//       try {
+//         const res = await API.get("/categories");
+//         setCategories(res.data.data || []);
+//       } catch (err) {
+//         console.log(err);
+//       }
+//     };
+//     fetchCategories();
+//   }, []);
+
+//   // ✅ Submit
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+
+//     // 🔥 FRONTEND CHECK (extra safety)
+//     if (user?.isBlocked) {
+//       return alert("Your account is blocked");
+//     }
+
+//     if (!user?.isKYCVerified) {
+//       return alert("KYC not verified");
+//     }
+
+//     if (
+//       !form.title ||
+//       !form.description ||
+//       !form.category ||
+//       !form.targetAmount ||
+//       !form.deadline ||
+//       !form.phoneNumber ||
+//       !form.email
+//     ) {
+//       alert("All fields are required");
+//       return;
+//     }
+
+//     try {
+//       setLoading(true);
+
+//       await API.post("/projects", {
+//         ...form,
+//         targetAmount: Number(form.targetAmount),
+//       });
+
+//       alert("✅ Project Created Successfully 🚀");
+//       navigate("/creator");
+
+//     } catch (err) {
+//       alert(err.response?.data?.message || "Error");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   return (
+//     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-indigo-800 to-slate-900 text-white">
+      
+//       <div className="bg-white/95 text-black backdrop-blur-md shadow-2xl rounded-3xl p-8 w-full max-w-lg">
+        
+//         {/* Heading */}
+//         <div className="text-center mb-6">
+//           <h1 className="text-2xl font-bold">Create Project 🚀</h1>
+//           <p className="text-gray-500 text-sm">
+//             Turn your idea into reality by raising funds
+//           </p>
+//         </div>
+
+//         {/* ⚠️ WARNINGS */}
+//         {!user?.isKYCVerified && (
+//           <p className="text-red-500 text-sm text-center mb-2">
+//             ⚠️ Only verified creators can create projects
+//           </p>
+//         )}
+
+//         {user?.isBlocked && (
+//           <p className="text-red-500 text-sm text-center mb-2">
+//             ❌ Your account is blocked
+//           </p>
+//         )}
+
+//         {/* Form */}
+//         <form onSubmit={handleSubmit} className="space-y-4">
+
+//           {/* Title */}
+//           <input
+//             type="text"
+//             placeholder="Project Title"
+//             value={form.title}
+//             onChange={(e) =>
+//               setForm({ ...form, title: e.target.value })
+//             }
+//             className="w-full p-3 rounded-xl bg-gray-100 outline-none focus:ring-2 focus:ring-blue-500"
+//           />
+
+//           {/* Description */}
+//           <textarea
+//             placeholder="Project Description"
+//             rows="3"
+//             value={form.description}
+//             onChange={(e) =>
+//               setForm({ ...form, description: e.target.value })
+//             }
+//             className="w-full p-3 rounded-xl bg-gray-100 outline-none focus:ring-2 focus:ring-blue-500"
+//           />
+
+//           {/* Category */}
+//           <select
+//             value={form.category}
+//             onChange={(e) =>
+//               setForm({ ...form, category: e.target.value })
+//             }
+//             className="w-full p-3 rounded-xl bg-gray-100 outline-none focus:ring-2 focus:ring-blue-500"
+//           >
+//             <option value="">Select Category</option>
+//             {categories.map((cat) => (
+//               <option key={cat._id} value={cat.name}>
+//                 {cat.name}
+//               </option>
+//             ))}
+//           </select>
+
+//           {/* Target */}
+//           <input
+//             type="number"
+//             placeholder="Target Amount (₹)"
+//             value={form.targetAmount}
+//             onChange={(e) =>
+//               setForm({ ...form, targetAmount: e.target.value })
+//             }
+//             className="w-full p-3 rounded-xl bg-gray-100 outline-none focus:ring-2 focus:ring-blue-500"
+//           />
+
+//           {/* Deadline */}
+//           <input
+//             type="date"
+//             value={form.deadline}
+//             onChange={(e) =>
+//               setForm({ ...form, deadline: e.target.value })
+//             }
+//             className="w-full p-3 rounded-xl bg-gray-100 outline-none focus:ring-2 focus:ring-blue-500"
+//           />
+
+//           {/* Phone */}
+//           <input
+//             type="text"
+//             placeholder="Phone Number"
+//             value={form.phoneNumber}
+//             onChange={(e) =>
+//               setForm({ ...form, phoneNumber: e.target.value })
+//             }
+//             className="w-full p-3 rounded-xl bg-gray-100 outline-none focus:ring-2 focus:ring-blue-500"
+//           />
+
+//           {/* Email */}
+//           <input
+//             type="text"
+//             placeholder="Email"
+//             value={form.email}
+//             onChange={(e) =>
+//               setForm({ ...form, email: e.target.value })
+//             }
+//             className="w-full p-3 rounded-xl bg-gray-100 outline-none focus:ring-2 focus:ring-blue-500"
+//           />
+
+//           {/* 🔥 FINAL BUTTON */}
+//           <button
+//             type="submit"
+//             disabled={
+//               loading || !user?.isKYCVerified || user?.isBlocked
+//             }
+//             className={`w-full py-3 rounded-xl font-semibold shadow-lg ${
+//               loading || !user?.isKYCVerified || user?.isBlocked
+//                 ? "bg-gray-400 cursor-not-allowed"
+//                 : "bg-gradient-to-r from-blue-600 to-indigo-700 text-white hover:from-blue-700 hover:to-indigo-800"
+//             }`}
+//           >
+//             {loading
+//               ? "Creating..."
+//               : !user?.isKYCVerified
+//               ? "Verify KYC to Create Project"
+//               : user?.isBlocked
+//               ? "Account Blocked"
+//               : "Create Project 🚀"}
+//           </button>
+
+//         </form>
+
+//         {/* Footer */}
+//         <p className="text-xs text-gray-500 mt-4 text-center">
+//           Tip: Add clear details & phone number to gain trust 💡
+//         </p>
+//       </div>
+//     </div>
+//   );
+// }
 import { useState, useEffect } from "react";
 import API from "../services/api";
 import { useNavigate } from "react-router-dom";
@@ -944,7 +1165,6 @@ import { useNavigate } from "react-router-dom";
 export default function CreateProject() {
   const navigate = useNavigate();
 
-  // 🔥 USER
   const user = JSON.parse(localStorage.getItem("user"));
 
   const [form, setForm] = useState({
@@ -960,7 +1180,10 @@ export default function CreateProject() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // ✅ Fetch categories
+  // 🔥 SAME INPUT STYLE
+  const inputStyle =
+    "w-full p-3 rounded-xl bg-black/40 border border-cyan-400/30 text-white outline-none focus:ring-2 focus:ring-cyan-400 focus:border-cyan-300 placeholder-gray-400";
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -973,11 +1196,9 @@ export default function CreateProject() {
     fetchCategories();
   }, []);
 
-  // ✅ Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 🔥 FRONTEND CHECK (extra safety)
     if (user?.isBlocked) {
       return alert("Your account is blocked");
     }
@@ -1009,7 +1230,6 @@ export default function CreateProject() {
 
       alert("✅ Project Created Successfully 🚀");
       navigate("/creator");
-
     } catch (err) {
       alert(err.response?.data?.message || "Error");
     } finally {
@@ -1018,35 +1238,36 @@ export default function CreateProject() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-indigo-800 to-slate-900 text-white">
-      
-      <div className="bg-white/95 text-black backdrop-blur-md shadow-2xl rounded-3xl p-8 w-full max-w-lg">
-        
+    <div className="min-h-screen flex items-center justify-center bg-black text-white">
+
+      <div className="bg-black/70 border border-cyan-400/30 backdrop-blur-xl shadow-[0_0_30px_rgba(0,255,255,0.2)] rounded-3xl p-8 w-full max-w-lg">
+
         {/* Heading */}
         <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold">Create Project 🚀</h1>
-          <p className="text-gray-500 text-sm">
+          <h1 className="text-3xl font-bold text-cyan-400">
+            Create Project 🚀
+          </h1>
+          <p className="text-gray-400 text-sm">
             Turn your idea into reality by raising funds
           </p>
         </div>
 
-        {/* ⚠️ WARNINGS */}
+        {/* WARNINGS */}
         {!user?.isKYCVerified && (
-          <p className="text-red-500 text-sm text-center mb-2">
+          <p className="text-yellow-400 text-sm text-center mb-2">
             ⚠️ Only verified creators can create projects
           </p>
         )}
 
         {user?.isBlocked && (
-          <p className="text-red-500 text-sm text-center mb-2">
+          <p className="text-red-400 text-sm text-center mb-2">
             ❌ Your account is blocked
           </p>
         )}
 
-        {/* Form */}
+        {/* FORM */}
         <form onSubmit={handleSubmit} className="space-y-4">
 
-          {/* Title */}
           <input
             type="text"
             placeholder="Project Title"
@@ -1054,10 +1275,9 @@ export default function CreateProject() {
             onChange={(e) =>
               setForm({ ...form, title: e.target.value })
             }
-            className="w-full p-3 rounded-xl bg-gray-100 outline-none focus:ring-2 focus:ring-blue-500"
+            className={inputStyle}
           />
 
-          {/* Description */}
           <textarea
             placeholder="Project Description"
             rows="3"
@@ -1065,26 +1285,24 @@ export default function CreateProject() {
             onChange={(e) =>
               setForm({ ...form, description: e.target.value })
             }
-            className="w-full p-3 rounded-xl bg-gray-100 outline-none focus:ring-2 focus:ring-blue-500"
+            className={inputStyle}
           />
 
-          {/* Category */}
           <select
             value={form.category}
             onChange={(e) =>
               setForm({ ...form, category: e.target.value })
             }
-            className="w-full p-3 rounded-xl bg-gray-100 outline-none focus:ring-2 focus:ring-blue-500"
+            className={inputStyle}
           >
             <option value="">Select Category</option>
             {categories.map((cat) => (
-              <option key={cat._id} value={cat.name}>
+              <option key={cat._id} value={cat.name} className="text-black">
                 {cat.name}
               </option>
             ))}
           </select>
 
-          {/* Target */}
           <input
             type="number"
             placeholder="Target Amount (₹)"
@@ -1092,20 +1310,18 @@ export default function CreateProject() {
             onChange={(e) =>
               setForm({ ...form, targetAmount: e.target.value })
             }
-            className="w-full p-3 rounded-xl bg-gray-100 outline-none focus:ring-2 focus:ring-blue-500"
+            className={inputStyle}
           />
 
-          {/* Deadline */}
           <input
             type="date"
             value={form.deadline}
             onChange={(e) =>
               setForm({ ...form, deadline: e.target.value })
             }
-            className="w-full p-3 rounded-xl bg-gray-100 outline-none focus:ring-2 focus:ring-blue-500"
+            className={inputStyle}
           />
 
-          {/* Phone */}
           <input
             type="text"
             placeholder="Phone Number"
@@ -1113,10 +1329,9 @@ export default function CreateProject() {
             onChange={(e) =>
               setForm({ ...form, phoneNumber: e.target.value })
             }
-            className="w-full p-3 rounded-xl bg-gray-100 outline-none focus:ring-2 focus:ring-blue-500"
+            className={inputStyle}
           />
 
-          {/* Email */}
           <input
             type="text"
             placeholder="Email"
@@ -1124,19 +1339,19 @@ export default function CreateProject() {
             onChange={(e) =>
               setForm({ ...form, email: e.target.value })
             }
-            className="w-full p-3 rounded-xl bg-gray-100 outline-none focus:ring-2 focus:ring-blue-500"
+            className={inputStyle}
           />
 
-          {/* 🔥 FINAL BUTTON */}
+          {/* BUTTON */}
           <button
             type="submit"
             disabled={
               loading || !user?.isKYCVerified || user?.isBlocked
             }
-            className={`w-full py-3 rounded-xl font-semibold shadow-lg ${
+            className={`w-full py-3 rounded-xl font-semibold shadow-lg transition ${
               loading || !user?.isKYCVerified || user?.isBlocked
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-gradient-to-r from-blue-600 to-indigo-700 text-white hover:from-blue-700 hover:to-indigo-800"
+                ? "bg-gray-500 cursor-not-allowed"
+                : "bg-gradient-to-r from-blue-600 to-emerald-600 text-white hover:opacity-90"
             }`}
           >
             {loading

@@ -1250,6 +1250,252 @@
 //     </AdminLayout>
 //   );
 // }
+// import { useEffect, useState } from "react";
+// import API from "../services/api";
+// import AdminLayout from "../components/AdminLayout";
+// import AdminCharts from "../components/AdminCharts";
+
+// export default function Dashboard() {
+//   const [stats, setStats] = useState({});
+//   const [users, setUsers] = useState([]);
+//   const [showUsers, setShowUsers] = useState(false);
+
+//   useEffect(() => {
+//     fetchStats();
+//   }, []);
+
+//   // 📊 Stats
+//   const fetchStats = async () => {
+//     try {
+//       const res = await API.get("/admin/dashboard", {
+//         headers: {
+//           Authorization: `Bearer ${localStorage.getItem("token")}`,
+//         },
+//       });
+//       setStats(res.data.data || {});
+//     } catch (err) {
+//       console.log(err);
+//     }
+//   };
+
+//   // 👤 Users
+//   const fetchUsers = async () => {
+//     try {
+//       const res = await API.get("/admin/users", {
+//         headers: {
+//           Authorization: `Bearer ${localStorage.getItem("token")}`,
+//         },
+//       });
+
+//       setUsers(res.data.data || []);
+//       setShowUsers(true);
+//     } catch (err) {
+//       console.log(err);
+//       alert("Error fetching users");
+//     }
+//   };
+
+//   // 🚫 Block/Unblock
+//   const toggleBlock = async (id, isBlocked) => {
+//     try {
+//       await API.put(
+//         `/admin/users/${id}/block`,
+//         { isBlocked: !isBlocked },
+//         {
+//           headers: {
+//             Authorization: `Bearer ${localStorage.getItem("token")}`,
+//           },
+//         }
+//       );
+
+//       fetchUsers();
+//     } catch (err) {
+//       alert("Error updating user");
+//     }
+//   };
+
+//   // ✅ Verify / Not Verify
+//   const toggleVerify = async (id, isVerified) => {
+//     try {
+//       await API.put(
+//         `/admin/users/${id}/verify`,
+//         { isVerified: !isVerified },
+//         {
+//           headers: {
+//             Authorization: `Bearer ${localStorage.getItem("token")}`,
+//           },
+//         }
+//       );
+
+//       fetchUsers();
+//     } catch (err) {
+//       alert("Error updating verification");
+//     }
+//   };
+
+//   return (
+//     <AdminLayout>
+//       <h1 className="text-3xl font-bold mb-6">Dashboard 🚀</h1>
+
+//       {/* 📊 STATS */}
+//       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-8">
+
+//         {/* USERS */}
+//         <div
+//           onClick={fetchUsers}
+//           className="bg-white/95 text-black p-5 rounded-xl cursor-pointer hover:scale-105 transition"
+//         >
+//           <p className="text-sm text-gray-500">Users</p>
+//           <h2 className="text-xl md:text-2xl font-bold">
+//             {stats.totalUsers || 0}
+//           </h2>
+//         </div>
+
+//         <div className="bg-white/95 text-black p-5 rounded-xl">
+//           <p className="text-sm text-gray-500">Active</p>
+//           <h2 className="text-xl md:text-2xl font-bold">
+//             {stats.activeProjects || 0}
+//           </h2>
+//         </div>
+
+//         <div className="bg-white/95 text-black p-5 rounded-xl">
+//           <p className="text-sm text-gray-500">Draft</p>
+//           <h2 className="text-xl md:text-2xl font-bold">
+//             {stats.draftProjects || 0}
+//           </h2>
+//         </div>
+
+//         <div className="bg-white/95 text-black p-5 rounded-xl">
+//           <p className="text-sm text-gray-500">Cancelled</p>
+//           <h2 className="text-xl md:text-2xl font-bold">
+//             {stats.cancelledProjects || 0}
+//           </h2>
+//         </div>
+
+//         <div className="bg-white/95 text-black p-5 rounded-xl">
+//           <p className="text-sm text-gray-500">Completed</p>
+//           <h2 className="text-xl md:text-2xl font-bold">
+//             {stats.completedProjects || 0}
+//           </h2>
+//         </div>
+
+//         <div className="bg-white/95 text-black p-5 rounded-xl col-span-2">
+//           <p className="text-sm text-gray-500">Total Fund</p>
+//           <h2 className="text-lg md:text-2xl font-bold">
+//             ₹{stats.totalFundRaised?.toLocaleString() || 0}
+//           </h2>
+//         </div>
+
+//       </div>
+
+//       {/* 📊 Charts */}
+//       <AdminCharts stats={stats} />
+
+//       {/* 👤 USERS MODAL */}
+//       {showUsers && (
+//         <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50">
+          
+//           <div className="bg-white text-black p-6 rounded-xl w-[700px] max-h-[80vh] overflow-auto">
+
+//             <h2 className="text-xl font-bold mb-4">All Users</h2>
+
+//             {users.map((u) => (
+//               <div key={u._id} className="border p-3 mb-3 rounded">
+
+//                 <p><b>Name:</b> {u.name}</p>
+//                 <p><b>Email:</b> {u.email}</p>
+//                 <p><b>Role:</b> {u.role}</p>
+
+//                 {/* Investor */}
+//                 {u.role === "INVESTOR" && (
+//                   <p><b>Experience:</b> {u.experience || "N/A"}</p>
+//                 )}
+
+//                 {/* Creator */}
+//                 {u.role === "CREATOR" && (
+//                   <>
+//                     <p><b>College:</b> {u.college}</p>
+//                     <p><b>Course:</b> {u.course}</p>
+//                   </>
+//                 )}
+
+//                 {/* Documents */}
+//                 <div className="flex gap-3 mt-2 flex-wrap">
+
+//                   {u.aadhaarUrl && (
+//                     <a href={u.aadhaarUrl} target="_blank" className="text-blue-600 underline">
+//                       Aadhaar
+//                     </a>
+//                   )}
+
+//                   {u.panUrl && (
+//                     <a href={u.panUrl} target="_blank" className="text-green-600 underline">
+//                       PAN
+//                     </a>
+//                   )}
+
+//                   {u.studentIdUrl && (
+//                     <a href={u.studentIdUrl} target="_blank" className="text-purple-600 underline">
+//                       Student ID
+//                     </a>
+//                   )}
+
+//                 </div>
+
+//                 {/* ✅ STATUS FIX */}
+//                 <p className="mt-2 text-sm">
+//                   Status:{" "}
+//                   <span className={`font-semibold ${
+//                     u.isKYCVerified ? "text-green-600" : "text-yellow-600"
+//                   }`}>
+//                     {u.isKYCVerified ? "Verified ✅" : "Not Verified ⏳"}
+//                   </span>
+//                 </p>
+
+//                 {/* 🚫 Block + ✅ Verify */}
+//                 <div className="flex gap-2 mt-3">
+
+//                   <button
+//                     onClick={() => toggleBlock(u._id, u.isBlocked)}
+//                     className={`px-3 py-1 rounded ${
+//                       u.isBlocked
+//                         ? "bg-green-500 text-white"
+//                         : "bg-red-500 text-white"
+//                     }`}
+//                   >
+//                     {u.isBlocked ? "Unblock" : "Block"}
+//                   </button>
+
+//                   <button
+//                     onClick={() => toggleVerify(u._id, u.isKYCVerified)}
+//                     className={`px-3 py-1 rounded ${
+//                       u.isKYCVerified
+//                         ? "bg-yellow-500 text-black"
+//                         : "bg-blue-600 text-white"
+//                     }`}
+//                   >
+//                     {u.isKYCVerified ? "Not Verified" : "Verify"}
+//                   </button>
+
+//                 </div>
+
+//               </div>
+//             ))}
+
+//             <button
+//               onClick={() => setShowUsers(false)}
+//               className="mt-4 bg-gray-800 text-white px-4 py-2 rounded"
+//             >
+//               Close
+//             </button>
+
+//           </div>
+//         </div>
+//       )}
+
+//     </AdminLayout>
+//   );
+// }
 import { useEffect, useState } from "react";
 import API from "../services/api";
 import AdminLayout from "../components/AdminLayout";
@@ -1264,7 +1510,6 @@ export default function Dashboard() {
     fetchStats();
   }, []);
 
-  // 📊 Stats
   const fetchStats = async () => {
     try {
       const res = await API.get("/admin/dashboard", {
@@ -1278,7 +1523,6 @@ export default function Dashboard() {
     }
   };
 
-  // 👤 Users
   const fetchUsers = async () => {
     try {
       const res = await API.get("/admin/users", {
@@ -1295,7 +1539,6 @@ export default function Dashboard() {
     }
   };
 
-  // 🚫 Block/Unblock
   const toggleBlock = async (id, isBlocked) => {
     try {
       await API.put(
@@ -1307,14 +1550,12 @@ export default function Dashboard() {
           },
         }
       );
-
       fetchUsers();
-    } catch (err) {
+    } catch {
       alert("Error updating user");
     }
   };
 
-  // ✅ Verify / Not Verify
   const toggleVerify = async (id, isVerified) => {
     try {
       await API.put(
@@ -1326,62 +1567,63 @@ export default function Dashboard() {
           },
         }
       );
-
       fetchUsers();
-    } catch (err) {
+    } catch {
       alert("Error updating verification");
     }
   };
 
+  // 🔥 Common card style
+  const cardStyle =
+    "bg-black/60 border border-cyan-400/30 backdrop-blur-xl shadow-[0_0_20px_rgba(0,255,255,0.15)] p-5 rounded-2xl hover:scale-105 transition";
+
   return (
     <AdminLayout>
-      <h1 className="text-3xl font-bold mb-6">Dashboard 🚀</h1>
+      <h1 className="text-3xl font-bold mb-6 text-cyan-400">
+        Admin Dashboard 🚀
+      </h1>
 
       {/* 📊 STATS */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-8">
 
-        {/* USERS */}
-        <div
-          onClick={fetchUsers}
-          className="bg-white/95 text-black p-5 rounded-xl cursor-pointer hover:scale-105 transition"
-        >
-          <p className="text-sm text-gray-500">Users</p>
-          <h2 className="text-xl md:text-2xl font-bold">
+        <div onClick={fetchUsers} className={`${cardStyle} cursor-pointer`}>
+          <p className="text-sm text-gray-400">Users</p>
+          <h2 className="text-xl md:text-2xl font-bold text-white">
             {stats.totalUsers || 0}
           </h2>
         </div>
 
-        <div className="bg-white/95 text-black p-5 rounded-xl">
-          <p className="text-sm text-gray-500">Active</p>
-          <h2 className="text-xl md:text-2xl font-bold">
+        <div className={cardStyle}>
+          <p className="text-sm text-gray-400">Active</p>
+          <h2 className="text-xl md:text-2xl font-bold text-green-400">
             {stats.activeProjects || 0}
           </h2>
         </div>
 
-        <div className="bg-white/95 text-black p-5 rounded-xl">
-          <p className="text-sm text-gray-500">Draft</p>
-          <h2 className="text-xl md:text-2xl font-bold">
+        <div className={cardStyle}>
+          <p className="text-sm text-gray-400">Draft</p>
+          <h2 className="text-xl md:text-2xl font-bold text-yellow-400">
             {stats.draftProjects || 0}
           </h2>
         </div>
 
-        <div className="bg-white/95 text-black p-5 rounded-xl">
-          <p className="text-sm text-gray-500">Cancelled</p>
-          <h2 className="text-xl md:text-2xl font-bold">
+        <div className={cardStyle}>
+          <p className="text-sm text-gray-400">Cancelled</p>
+          <h2 className="text-xl md:text-2xl font-bold text-red-400">
             {stats.cancelledProjects || 0}
           </h2>
         </div>
 
-        <div className="bg-white/95 text-black p-5 rounded-xl">
-          <p className="text-sm text-gray-500">Completed</p>
-          <h2 className="text-xl md:text-2xl font-bold">
+        <div className={cardStyle}>
+          <p className="text-sm text-gray-400">Completed</p>
+          <h2 className="text-xl md:text-2xl font-bold text-blue-400">
             {stats.completedProjects || 0}
           </h2>
         </div>
 
-        <div className="bg-white/95 text-black p-5 rounded-xl col-span-2">
-          <p className="text-sm text-gray-500">Total Fund</p>
-          <h2 className="text-lg md:text-2xl font-bold">
+        <div className={`${cardStyle} col-span-2`}>
+          <p className="text-sm text-gray-400">Total Fund</p>
+          <h2 className="text-lg md:text-2xl font-bold text-cyan-300">
             ₹{stats.totalFundRaised?.toLocaleString() || 0}
           </h2>
         </div>
@@ -1393,25 +1635,27 @@ export default function Dashboard() {
 
       {/* 👤 USERS MODAL */}
       {showUsers && (
-        <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50">
-          
-          <div className="bg-white text-black p-6 rounded-xl w-[700px] max-h-[80vh] overflow-auto">
+        <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
 
-            <h2 className="text-xl font-bold mb-4">All Users</h2>
+          <div className="bg-black/80 border border-cyan-400/30 backdrop-blur-xl text-white p-6 rounded-2xl w-[750px] max-h-[80vh] overflow-auto shadow-[0_0_30px_rgba(0,255,255,0.2)]">
+
+            <h2 className="text-xl font-bold mb-4 text-cyan-400">
+              All Users
+            </h2>
 
             {users.map((u) => (
-              <div key={u._id} className="border p-3 mb-3 rounded">
-
+              <div
+                key={u._id}
+                className="border border-cyan-400/20 p-4 mb-4 rounded-xl bg-black/50"
+              >
                 <p><b>Name:</b> {u.name}</p>
                 <p><b>Email:</b> {u.email}</p>
                 <p><b>Role:</b> {u.role}</p>
 
-                {/* Investor */}
                 {u.role === "INVESTOR" && (
                   <p><b>Experience:</b> {u.experience || "N/A"}</p>
                 )}
 
-                {/* Creator */}
                 {u.role === "CREATOR" && (
                   <>
                     <p><b>College:</b> {u.college}</p>
@@ -1420,47 +1664,47 @@ export default function Dashboard() {
                 )}
 
                 {/* Documents */}
-                <div className="flex gap-3 mt-2 flex-wrap">
+                <div className="flex gap-3 mt-2 flex-wrap text-sm">
 
                   {u.aadhaarUrl && (
-                    <a href={u.aadhaarUrl} target="_blank" className="text-blue-600 underline">
+                    <a href={u.aadhaarUrl} target="_blank" className="text-cyan-400 underline">
                       Aadhaar
                     </a>
                   )}
 
                   {u.panUrl && (
-                    <a href={u.panUrl} target="_blank" className="text-green-600 underline">
+                    <a href={u.panUrl} target="_blank" className="text-green-400 underline">
                       PAN
                     </a>
                   )}
 
                   {u.studentIdUrl && (
-                    <a href={u.studentIdUrl} target="_blank" className="text-purple-600 underline">
+                    <a href={u.studentIdUrl} target="_blank" className="text-purple-400 underline">
                       Student ID
                     </a>
                   )}
 
                 </div>
 
-                {/* ✅ STATUS FIX */}
+                {/* Status */}
                 <p className="mt-2 text-sm">
                   Status:{" "}
                   <span className={`font-semibold ${
-                    u.isKYCVerified ? "text-green-600" : "text-yellow-600"
+                    u.isKYCVerified ? "text-green-400" : "text-yellow-400"
                   }`}>
                     {u.isKYCVerified ? "Verified ✅" : "Not Verified ⏳"}
                   </span>
                 </p>
 
-                {/* 🚫 Block + ✅ Verify */}
+                {/* Actions */}
                 <div className="flex gap-2 mt-3">
 
                   <button
                     onClick={() => toggleBlock(u._id, u.isBlocked)}
-                    className={`px-3 py-1 rounded ${
+                    className={`px-3 py-1 rounded-lg ${
                       u.isBlocked
-                        ? "bg-green-500 text-white"
-                        : "bg-red-500 text-white"
+                        ? "bg-green-500"
+                        : "bg-red-500"
                     }`}
                   >
                     {u.isBlocked ? "Unblock" : "Block"}
@@ -1468,10 +1712,10 @@ export default function Dashboard() {
 
                   <button
                     onClick={() => toggleVerify(u._id, u.isKYCVerified)}
-                    className={`px-3 py-1 rounded ${
+                    className={`px-3 py-1 rounded-lg ${
                       u.isKYCVerified
                         ? "bg-yellow-500 text-black"
-                        : "bg-blue-600 text-white"
+                        : "bg-cyan-500 text-black"
                     }`}
                   >
                     {u.isKYCVerified ? "Not Verified" : "Verify"}
@@ -1484,7 +1728,7 @@ export default function Dashboard() {
 
             <button
               onClick={() => setShowUsers(false)}
-              className="mt-4 bg-gray-800 text-white px-4 py-2 rounded"
+              className="mt-4 bg-gray-800 px-4 py-2 rounded-lg hover:bg-gray-700"
             >
               Close
             </button>
@@ -1492,7 +1736,6 @@ export default function Dashboard() {
           </div>
         </div>
       )}
-
     </AdminLayout>
   );
 }

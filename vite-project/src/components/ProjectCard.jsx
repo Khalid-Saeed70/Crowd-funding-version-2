@@ -479,6 +479,66 @@
 // // };
 
 // // export default ProjectCard;
+// import { useNavigate } from "react-router-dom";
+
+// const ProjectCard = ({ project }) => {
+//   const navigate = useNavigate();
+
+//   const percent =
+//     project?.targetAmount > 0
+//       ? Math.min(
+//           100,
+//           (project.fundedAmount / project.targetAmount) * 100
+//         )
+//       : 0;
+
+//   return (
+//     <div className="bg-white p-4 rounded-xl shadow-md text-black">
+//       <h2 className="text-lg font-bold mb-1">
+//         {project.title}
+//       </h2>
+
+//       <p className="text-sm mb-2">
+//         {project.description}
+//       </p>
+
+//       {/* Progress */}
+//       <div className="w-full bg-gray-200 h-2 rounded">
+//         <div
+//           className="bg-blue-600 h-2 rounded"
+//           style={{ width: `${percent}%` }}
+//         />
+//       </div>
+
+//       <p className="text-sm mt-2">
+//         ₹{project.fundedAmount} / ₹{project.targetAmount}
+//       </p>
+
+//       {/* 🔥 ONLY BUTTONS */}
+//       <div className="flex gap-2 mt-3">
+//         <button
+//           onClick={() =>
+//             navigate(`/project/${project._id}?mode=view`)
+//           }
+//           className="bg-blue-600 text-white px-3 py-2 rounded w-full"
+//         >
+//           View
+//         </button>
+
+//         <button
+//           onClick={() =>
+//             navigate(`/project/${project._id}?mode=invest`)
+//           }
+//           className="bg-green-600 text-white px-3 py-2 rounded w-full"
+//         >
+//           Invest
+//         </button>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default ProjectCard;
 import { useNavigate } from "react-router-dom";
 
 const ProjectCard = ({ project }) => {
@@ -493,34 +553,39 @@ const ProjectCard = ({ project }) => {
       : 0;
 
   return (
-    <div className="bg-white p-4 rounded-xl shadow-md text-black">
-      <h2 className="text-lg font-bold mb-1">
+    <div className="bg-black border border-cyan-500/30 rounded-2xl p-4 text-white shadow-[0_0_20px_rgba(0,255,255,0.1)] hover:shadow-[0_0_25px_rgba(0,255,255,0.3)] transition">
+
+      {/* Title */}
+      <h2 className="text-lg font-bold mb-1 text-cyan-400">
         {project.title}
       </h2>
 
-      <p className="text-sm mb-2">
+      {/* Description */}
+      <p className="text-sm mb-3 text-gray-400">
         {project.description}
       </p>
 
-      {/* Progress */}
-      <div className="w-full bg-gray-200 h-2 rounded">
+      {/* Progress Bar */}
+      <div className="w-full bg-gray-800 h-2 rounded">
         <div
-          className="bg-blue-600 h-2 rounded"
+          className="bg-cyan-400 h-2 rounded shadow-[0_0_8px_#22d3ee]"
           style={{ width: `${percent}%` }}
         />
       </div>
 
-      <p className="text-sm mt-2">
+      {/* Amount */}
+      <p className="text-sm mt-2 text-gray-300">
         ₹{project.fundedAmount} / ₹{project.targetAmount}
       </p>
 
-      {/* 🔥 ONLY BUTTONS */}
-      <div className="flex gap-2 mt-3">
+      {/* Buttons */}
+      <div className="flex gap-2 mt-4">
+
         <button
           onClick={() =>
             navigate(`/project/${project._id}?mode=view`)
           }
-          className="bg-blue-600 text-white px-3 py-2 rounded w-full"
+          className="w-full py-2 rounded-lg border border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-black transition shadow-[0_0_10px_rgba(0,255,255,0.3)]"
         >
           View
         </button>
@@ -529,10 +594,11 @@ const ProjectCard = ({ project }) => {
           onClick={() =>
             navigate(`/project/${project._id}?mode=invest`)
           }
-          className="bg-green-600 text-white px-3 py-2 rounded w-full"
+          className="w-full py-2 rounded-lg bg-gradient-to-r from-blue-600 to-emerald-500 text-white shadow-[0_0_10px_rgba(0,255,255,0.3)] hover:opacity-90 transition"
         >
           Invest
         </button>
+
       </div>
     </div>
   );

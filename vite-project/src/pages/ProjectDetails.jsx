@@ -2315,6 +2315,262 @@
 // };
 
 // export default ProjectDetails;
+// import { useEffect, useState } from "react";
+// import {
+//   useParams,
+//   useSearchParams,
+//   useNavigate,
+// } from "react-router-dom";
+// import API from "../services/api";
+
+// const ProjectDetails = () => {
+//   const { id } = useParams();
+//   const [searchParams] = useSearchParams();
+//   const navigate = useNavigate();
+
+//   const mode = searchParams.get("mode") || "view";
+
+//   const [project, setProject] = useState(null);
+//   const [amount, setAmount] = useState("");
+//   const [preview, setPreview] = useState(null);
+//   const [loading, setLoading] = useState(false);
+
+//   // 🔥 NEW STATES
+//   const [paymentMethod, setPaymentMethod] = useState("UPI");
+//   const [transactionId, setTransactionId] = useState("");
+//   const [paymentDate, setPaymentDate] = useState("");
+//   const [proof, setProof] = useState(null);
+//   const [declaration, setDeclaration] = useState(false);
+
+//   const user = JSON.parse(localStorage.getItem("user"));
+
+//   useEffect(() => {
+//     fetchProject();
+//   }, [id]);
+
+//   const fetchProject = async () => {
+//     try {
+//       const res = await API.get(`/projects/${id}`);
+//       setProject(res.data.data);
+//     } catch (err) {
+//       console.log(err);
+//     }
+//   };
+
+//   // 🔍 PREVIEW
+//   const handlePreview = () => {
+//     if (!amount || amount <= 0) {
+//       alert("Enter valid amount");
+//       return;
+//     }
+
+//     const interestRate = 0.12;
+//     const interest = Number(amount) * interestRate;
+//     const total = Number(amount) + interest;
+
+//     setPreview({ interest, total });
+//   };
+
+//   // 🚀 INVEST
+//   const handleInvest = async () => {
+//     try {
+//       if (!user) return alert("Login first");
+//       if (user.role !== "INVESTOR")
+//         return alert("Only Investors allowed");
+
+//       if (!amount) return alert("Enter amount");
+//       if (!transactionId) return alert("Enter transaction ID");
+//       if (!paymentDate) return alert("Select payment date");
+//       if (!proof) return alert("Upload payment proof");
+//       if (!declaration) return alert("Please confirm transaction");
+
+//       setLoading(true);
+
+//       const data = new FormData();
+
+//       // ✅ IMPORTANT FIXES
+//       data.append("projectId", id);
+//       data.append("amount", Number(amount)); // 🔥 FIX
+//       data.append("paymentMethod", paymentMethod);
+//       data.append("transactionId", transactionId);
+//       data.append("paymentDate", paymentDate);
+//       data.append("proof", proof);
+
+//       console.log("SENDING DATA:", {
+//         projectId: id,
+//         amount,
+//         paymentMethod,
+//         transactionId,
+//       });
+
+//       await API.post("/investments", data, {
+       
+//       });
+
+//       // UI update
+//       setProject((prev) => ({
+//         ...prev,
+//         fundedAmount: prev.fundedAmount + Number(amount),
+//       }));
+
+//       // reset
+//       setAmount("");
+//       setPreview(null);
+//       setTransactionId("");
+//       setPaymentDate("");
+//       setProof(null);
+//       setDeclaration(false);
+
+//       alert("✅ Investment Successfull");
+
+//     } catch (err) {
+//       console.log(err);
+//       alert(err.response?.data?.message || "Error");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   if (!project)
+//     return <p className="text-center mt-10">Loading...</p>;
+
+//   const percent =
+//     project.targetAmount > 0
+//       ? Math.min(
+//           100,
+//           (project.fundedAmount / project.targetAmount) * 100
+//         )
+//       : 0;
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-800 to-slate-900 flex justify-center items-center p-6 text-white">
+
+//       <div className="bg-white/95 text-black p-6 rounded-3xl shadow-2xl w-full max-w-xl relative">
+
+//         {/* CLOSE */}
+//         <button
+//           onClick={() => navigate(-1)}
+//           className="absolute top-3 right-4 text-xl font-bold"
+//         >
+//           ✕
+//         </button>
+
+//         {/* TITLE */}
+//         <h2 className="text-2xl font-bold mb-2">
+//           {project.title}
+//         </h2>
+
+//         <p className="text-gray-600 mb-3">
+//           {project.description}
+//         </p>
+
+//         {/* PROGRESS */}
+//         <div className="mb-3">
+//           <div className="w-full bg-gray-200 h-2 rounded">
+//             <div
+//               className="bg-blue-600 h-2 rounded"
+//               style={{ width: `${percent}%` }}
+//             ></div>
+//           </div>
+
+//           <div className="flex justify-between text-xs mt-1">
+//             <span>₹{project.fundedAmount}</span>
+//             <span>{Math.round(percent)}%</span>
+//           </div>
+//         </div>
+
+//         {/* DETAILS */}
+//         <div className="space-y-1 text-sm mb-4">
+//           <p><b>Status:</b> {project.status}</p>
+//           <p><b>Category:</b> {project.category}</p>
+//           <p><b>Target:</b> ₹{project.targetAmount}</p>
+//           <p><b>Funded:</b> ₹{project.fundedAmount}</p>
+//         </div>
+
+//         {/* 💰 INVEST */}
+//         {mode === "invest" && (
+//           <div className="space-y-3 mt-4">
+
+//             <input
+//               type="number"
+//               placeholder="Enter amount (₹)"
+//               value={amount}
+//               onChange={(e) => setAmount(e.target.value)}
+//               className="w-full p-3 rounded-xl bg-gray-100"
+//             />
+
+//             <select
+//               value={paymentMethod}
+//               onChange={(e) => setPaymentMethod(e.target.value)}
+//               className="w-full p-3 rounded-xl bg-gray-100"
+//             >
+//               <option value="UPI">UPI</option>
+//               <option value="BANK">Bank Transfer</option>
+//               <option value="CARD">Card</option>
+//             </select>
+
+//             <input
+//               type="text"
+//               placeholder="Transaction ID / UTR"
+//               value={transactionId}
+//               onChange={(e) => setTransactionId(e.target.value)}
+//               className="w-full p-3 rounded-xl bg-gray-100"
+//             />
+
+//             <input
+//               type="date"
+//               value={paymentDate}
+//               onChange={(e) => setPaymentDate(e.target.value)}
+//               className="w-full p-3 rounded-xl bg-gray-100"
+//             />
+
+//             <input
+//               type="file"
+//               onChange={(e) => setProof(e.target.files[0])}
+//               className="w-full"
+//             />
+
+//             <div className="flex items-center gap-2 text-sm">
+//               <input
+//                 type="checkbox"
+//                 checked={declaration}
+//                 onChange={(e) =>
+//                   setDeclaration(e.target.checked)
+//                 }
+//               />
+//               <span>I confirm this is a real transaction</span>
+//             </div>
+
+//             <button
+//               onClick={handlePreview}
+//               className="w-full bg-gradient-to-r from-purple-600 to-indigo-700 text-white py-2 rounded-xl"
+//             >
+//               Preview Profit
+//             </button>
+
+//             {preview && (
+//               <div className="bg-gray-100 p-3 rounded-xl text-sm">
+//                 <p>💰 Interest: ₹{preview.interest}</p>
+//                 <p>📈 Total Return: ₹{preview.total}</p>
+//               </div>
+//             )}
+
+//             <button
+//               onClick={handleInvest}
+//               disabled={loading}
+//               className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3 rounded-xl"
+//             >
+//               {loading ? "Processing..." : "Invest Now 🚀"}
+//             </button>
+
+//           </div>
+//         )}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default ProjectDetails;
 import { useEffect, useState } from "react";
 import {
   useParams,
@@ -2335,7 +2591,6 @@ const ProjectDetails = () => {
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // 🔥 NEW STATES
   const [paymentMethod, setPaymentMethod] = useState("UPI");
   const [transactionId, setTransactionId] = useState("");
   const [paymentDate, setPaymentDate] = useState("");
@@ -2357,7 +2612,6 @@ const ProjectDetails = () => {
     }
   };
 
-  // 🔍 PREVIEW
   const handlePreview = () => {
     if (!amount || amount <= 0) {
       alert("Enter valid amount");
@@ -2371,7 +2625,6 @@ const ProjectDetails = () => {
     setPreview({ interest, total });
   };
 
-  // 🚀 INVEST
   const handleInvest = async () => {
     try {
       if (!user) return alert("Login first");
@@ -2387,33 +2640,20 @@ const ProjectDetails = () => {
       setLoading(true);
 
       const data = new FormData();
-
-      // ✅ IMPORTANT FIXES
       data.append("projectId", id);
-      data.append("amount", Number(amount)); // 🔥 FIX
+      data.append("amount", Number(amount));
       data.append("paymentMethod", paymentMethod);
       data.append("transactionId", transactionId);
       data.append("paymentDate", paymentDate);
       data.append("proof", proof);
 
-      console.log("SENDING DATA:", {
-        projectId: id,
-        amount,
-        paymentMethod,
-        transactionId,
-      });
+      await API.post("/investments", data);
 
-      await API.post("/investments", data, {
-       
-      });
-
-      // UI update
       setProject((prev) => ({
         ...prev,
         fundedAmount: prev.fundedAmount + Number(amount),
       }));
 
-      // reset
       setAmount("");
       setPreview(null);
       setTransactionId("");
@@ -2421,10 +2661,8 @@ const ProjectDetails = () => {
       setProof(null);
       setDeclaration(false);
 
-      alert("✅ Investment Successfull");
-
+      alert("✅ Investment Successful");
     } catch (err) {
-      console.log(err);
       alert(err.response?.data?.message || "Error");
     } finally {
       setLoading(false);
@@ -2432,7 +2670,7 @@ const ProjectDetails = () => {
   };
 
   if (!project)
-    return <p className="text-center mt-10">Loading...</p>;
+    return <p className="text-center mt-10 text-white">Loading...</p>;
 
   const percent =
     project.targetAmount > 0
@@ -2443,14 +2681,14 @@ const ProjectDetails = () => {
       : 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-800 to-slate-900 flex justify-center items-center p-6 text-white">
+    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-indigo-800 to-slate-900 flex justify-center items-center p-6 text-white">
 
-      <div className="bg-white/95 text-black p-6 rounded-3xl shadow-2xl w-full max-w-xl relative">
+      <div className="bg-white/95 backdrop-blur-md text-black p-7 rounded-3xl shadow-2xl w-full max-w-xl relative transition hover:scale-[1.01]">
 
         {/* CLOSE */}
         <button
           onClick={() => navigate(-1)}
-          className="absolute top-3 right-4 text-xl font-bold"
+          className="absolute top-4 right-4 text-xl font-bold text-gray-500 hover:text-black"
         >
           ✕
         </button>
@@ -2460,49 +2698,49 @@ const ProjectDetails = () => {
           {project.title}
         </h2>
 
-        <p className="text-gray-600 mb-3">
+        <p className="text-gray-600 mb-4 text-sm leading-relaxed">
           {project.description}
         </p>
 
         {/* PROGRESS */}
-        <div className="mb-3">
-          <div className="w-full bg-gray-200 h-2 rounded">
+        <div className="mb-4">
+          <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
             <div
-              className="bg-blue-600 h-2 rounded"
+              className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full transition-all"
               style={{ width: `${percent}%` }}
-            ></div>
+            />
           </div>
 
-          <div className="flex justify-between text-xs mt-1">
+          <div className="flex justify-between text-xs mt-1 text-gray-600">
             <span>₹{project.fundedAmount}</span>
             <span>{Math.round(percent)}%</span>
           </div>
         </div>
 
         {/* DETAILS */}
-        <div className="space-y-1 text-sm mb-4">
+        <div className="grid grid-cols-2 gap-3 text-sm mb-5">
           <p><b>Status:</b> {project.status}</p>
           <p><b>Category:</b> {project.category}</p>
           <p><b>Target:</b> ₹{project.targetAmount}</p>
           <p><b>Funded:</b> ₹{project.fundedAmount}</p>
         </div>
 
-        {/* 💰 INVEST */}
+        {/* INVEST */}
         {mode === "invest" && (
-          <div className="space-y-3 mt-4">
+          <div className="space-y-3">
 
             <input
               type="number"
               placeholder="Enter amount (₹)"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="w-full p-3 rounded-xl bg-gray-100"
+              className="w-full p-3 rounded-xl bg-gray-100 outline-none focus:ring-2 focus:ring-blue-500"
             />
 
             <select
               value={paymentMethod}
               onChange={(e) => setPaymentMethod(e.target.value)}
-              className="w-full p-3 rounded-xl bg-gray-100"
+              className="w-full p-3 rounded-xl bg-gray-100 outline-none"
             >
               <option value="UPI">UPI</option>
               <option value="BANK">Bank Transfer</option>
@@ -2514,20 +2752,20 @@ const ProjectDetails = () => {
               placeholder="Transaction ID / UTR"
               value={transactionId}
               onChange={(e) => setTransactionId(e.target.value)}
-              className="w-full p-3 rounded-xl bg-gray-100"
+              className="w-full p-3 rounded-xl bg-gray-100 outline-none"
             />
 
             <input
               type="date"
               value={paymentDate}
               onChange={(e) => setPaymentDate(e.target.value)}
-              className="w-full p-3 rounded-xl bg-gray-100"
+              className="w-full p-3 rounded-xl bg-gray-100 outline-none"
             />
 
             <input
               type="file"
               onChange={(e) => setProof(e.target.files[0])}
-              className="w-full"
+              className="w-full text-sm"
             />
 
             <div className="flex items-center gap-2 text-sm">
@@ -2543,13 +2781,13 @@ const ProjectDetails = () => {
 
             <button
               onClick={handlePreview}
-              className="w-full bg-gradient-to-r from-purple-600 to-indigo-700 text-white py-2 rounded-xl"
+              className="w-full bg-gradient-to-r from-purple-600 to-indigo-700 text-white py-2 rounded-xl hover:opacity-90"
             >
               Preview Profit
             </button>
 
             {preview && (
-              <div className="bg-gray-100 p-3 rounded-xl text-sm">
+              <div className="bg-gray-100 p-3 rounded-xl text-sm shadow-inner">
                 <p>💰 Interest: ₹{preview.interest}</p>
                 <p>📈 Total Return: ₹{preview.total}</p>
               </div>
@@ -2558,7 +2796,7 @@ const ProjectDetails = () => {
             <button
               onClick={handleInvest}
               disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3 rounded-xl"
+              className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3 rounded-xl font-semibold shadow-lg hover:scale-[1.02] transition"
             >
               {loading ? "Processing..." : "Invest Now 🚀"}
             </button>

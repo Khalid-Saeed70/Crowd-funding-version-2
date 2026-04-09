@@ -1137,6 +1137,328 @@
 //     </div>
 //   );
 // }
+// import { useEffect, useState } from "react";
+// import API from "../services/api";
+
+// export default function CreatorDashboard() {
+//   const [projects, setProjects] = useState([]);
+//   const [activeProject, setActiveProject] = useState(null);
+//   const [mode, setMode] = useState("view");
+//   const [form, setForm] = useState({});
+//   const [categories, setCategories] = useState([]);
+
+//   useEffect(() => {
+//     fetchMyProjects();
+//     fetchCategories();
+//   }, []);
+
+//   const fetchMyProjects = async () => {
+//     try {
+//       const res = await API.get("/projects/my/projects");
+//       setProjects(res.data.data || []);
+//     } catch (err) {
+//       console.log(err);
+//     }
+//   };
+
+//   const fetchCategories = async () => {
+//     try {
+//       const res = await API.get("/categories");
+//       setCategories(res.data.data || []);
+//     } catch (err) {
+//       console.log(err);
+//     }
+//   };
+
+//   // ✅ OPEN PROJECT (ONLY VIEW / EDIT — NO CREATE)
+//   const openProject = (project, modeType) => {
+//     setActiveProject(project);
+//     setMode(modeType);
+
+//     // 🔥 Clean form (only editable fields)
+//     setForm({
+//       title: project.title || "",
+//       description: project.description || "",
+//       category: project.category || "",
+//       targetAmount: project.targetAmount || "",
+//       deadline: project.deadline || "",
+//       phoneNumber: project.phoneNumber || "",
+//        email: project.email || "",
+//     });
+//   };
+
+//   const closeModal = () => {
+//     setActiveProject(null);
+//     setMode("view");
+//   };
+
+//   const handleSave = async () => {
+//     try {
+//       const res = await API.put(
+//         `/projects/${activeProject._id}`,
+//         form
+//       );
+
+//       alert("✅ Project updated successfully!");
+
+//       setProjects(
+//         projects.map((p) =>
+//           p._id === activeProject._id ? res.data.data : p
+//         )
+//       );
+
+//       closeModal();
+//     } catch (err) {
+//       alert(err.response?.data?.message || "Error");
+//     }
+//   };
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-indigo-800 to-slate-900 text-white p-6">
+//       <h1 className="text-3xl font-bold mb-6">
+//         Creator Dashboard 🎯
+//       </h1>
+
+//       {/* PROJECT CARDS */}
+//       <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+//         {projects.length > 0 ? (
+//           projects.map((p) => {
+//             const raised = p.fundedAmount || 0;
+//             const goal = p.targetAmount || 1;
+//             const progress = Math.min(
+//               (raised / goal) * 100,
+//               100
+//             );
+
+//             return (
+//               <div
+//                 key={p._id}
+//                 className="bg-white text-black rounded-3xl shadow-xl p-5 hover:scale-[1.03] transition"
+//               >
+//                 <h2 className="text-lg font-semibold">
+//                   {p.title}
+//                 </h2>
+
+//                 <p className="text-sm text-gray-600">
+//                   Status:
+//                   <span className="ml-1 font-semibold">
+//                     {p.status}
+//                   </span>
+//                 </p>
+
+//                 {/* Progress */}
+//                 <div className="mt-2">
+//                   <div className="w-full bg-gray-200 h-2 rounded">
+//                     <div
+//                       className="bg-blue-600 h-2 rounded"
+//                       style={{ width: `${progress}%` }}
+//                     ></div>
+//                   </div>
+
+//                   <div className="flex justify-between text-xs mt-1">
+//                     <span>₹{raised}</span>
+//                     <span>{Math.round(progress)}%</span>
+//                   </div>
+//                 </div>
+
+//                 <p className="text-sm mt-2">
+//                   Goal: ₹{goal}
+//                 </p>
+
+//                 {/* PHONE */}
+//                 <p className="text-sm">
+//                   <b>Phone:</b>{" "}
+//                   {p.phoneNumber || "N/A"}
+//                 </p>
+//                  <p className="text-sm">
+//                   <b>Email:</b>{" "}
+//                   {p.email || "N/A"}
+//                 </p>
+
+//                 <div className="flex justify-between mt-3">
+//                   <button
+//                     onClick={() => openProject(p, "view")}
+//                     className="bg-blue-600 text-white px-3 py-1 rounded"
+//                   >
+//                     View
+//                   </button>
+
+//                   <button
+//                     onClick={() => openProject(p, "edit")}
+//                     className="bg-indigo-600 text-white px-3 py-1 rounded"
+//                   >
+//                     Edit
+//                   </button>
+//                 </div>
+//               </div>
+//             );
+//           })
+//         ) : (
+//           <p>No projects found</p>
+//         )}
+//       </div>
+
+//       {/* MODAL */}
+//       {activeProject && (
+//         <div className="fixed inset-0 bg-black/50 flex justify-center items-center">
+//           <div className="bg-white text-black p-6 rounded-xl w-full max-w-xl relative">
+
+//             <button
+//               onClick={closeModal}
+//               className="absolute top-3 right-3 text-xl"
+//             >
+//               ✕
+//             </button>
+
+//             {/* VIEW MODE */}
+//             {mode === "view" && (
+//               <>
+//                 <h2 className="text-xl font-bold">
+//                   {activeProject.title}
+//                 </h2>
+
+//                 <p>{activeProject.description}</p>
+//                 <p>Category: {activeProject.category}</p>
+//                 <p>Status: {activeProject.status}</p>
+//                 <p>Target: ₹{activeProject.targetAmount}</p>
+//                 <p>Funded: ₹{activeProject.fundedAmount}</p>
+//                 <p>
+//                   Deadline:{" "}
+//                   {new Date(
+//                     activeProject.deadline
+//                   ).toDateString()}
+//                 </p>
+
+//                 <p>
+//                   Phone:{" "}
+//                   {activeProject.phoneNumber || "N/A"}
+//                 </p>
+//                   <p>
+//                   email:{" "}
+//                   {activeProject.email || "N/A"}
+//                 </p>
+//               </>
+//             )}
+
+//             {/* EDIT MODE */}
+//             {mode === "edit" && (
+//               <>
+//                 <input
+//                   value={form.title}
+//                   onChange={(e) =>
+//                     setForm({
+//                       ...form,
+//                       title: e.target.value,
+//                     })
+//                   }
+//                   className="border p-2 w-full mb-2"
+//                   placeholder="Title"
+//                 />
+
+//                 <textarea
+//                   value={form.description}
+//                   onChange={(e) =>
+//                     setForm({
+//                       ...form,
+//                       description: e.target.value,
+//                     })
+//                   }
+//                   className="border p-2 w-full mb-2"
+//                   placeholder="Description"
+//                 />
+
+//                 <select
+//                   value={form.category}
+//                   onChange={(e) =>
+//                     setForm({
+//                       ...form,
+//                       category: e.target.value,
+//                     })
+//                   }
+//                   className="border p-2 w-full mb-2"
+//                 >
+//                   <option value="">
+//                     Select Category
+//                   </option>
+//                   {categories.map((c) => (
+//                     <option key={c._id} value={c.name}>
+//                       {c.name}
+//                     </option>
+//                   ))}
+//                 </select>
+
+//                 <input
+//                   type="number"
+//                   value={form.targetAmount}
+//                   onChange={(e) =>
+//                     setForm({
+//                       ...form,
+//                       targetAmount: Number(
+//                         e.target.value
+//                       ),
+//                     })
+//                   }
+//                   className="border p-2 w-full mb-2"
+//                   placeholder="Target Amount"
+//                 />
+
+//                 <input
+//                   type="date"
+//                   value={
+//                     form.deadline
+//                       ? new Date(form.deadline)
+//                           .toISOString()
+//                           .split("T")[0]
+//                       : ""
+//                   }
+//                   onChange={(e) =>
+//                     setForm({
+//                       ...form,
+//                       deadline: e.target.value,
+//                     })
+//                   }
+//                   className="border p-2 w-full mb-2"
+//                 />
+
+//                 <input
+//                   type="text"
+//                   value={form.phoneNumber}
+//                   onChange={(e) =>
+//                     setForm({
+//                       ...form,
+//                       phoneNumber: e.target.value,
+//                     })
+//                   }
+//                   className="border p-2 w-full mb-2"
+//                   placeholder="Phone Number"
+//                 />
+//                 <input
+//                   type="text"
+//                   value={form.email}
+//                   onChange={(e) =>
+//                     setForm({
+//                       ...form,
+//                       email: e.target.value,
+//                     })
+//                   }
+//                   className="border p-2 w-full mb-2"
+//                   placeholder="Email"
+//                 />
+
+//                 <button
+//                   onClick={handleSave}
+//                   className="bg-green-600 text-white px-4 py-2"
+//                 >
+//                   Save
+//                 </button>
+//               </>
+//             )}
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
 import { useEffect, useState } from "react";
 import API from "../services/api";
 
@@ -1170,12 +1492,10 @@ export default function CreatorDashboard() {
     }
   };
 
-  // ✅ OPEN PROJECT (ONLY VIEW / EDIT — NO CREATE)
   const openProject = (project, modeType) => {
     setActiveProject(project);
     setMode(modeType);
 
-    // 🔥 Clean form (only editable fields)
     setForm({
       title: project.title || "",
       description: project.description || "",
@@ -1183,7 +1503,7 @@ export default function CreatorDashboard() {
       targetAmount: project.targetAmount || "",
       deadline: project.deadline || "",
       phoneNumber: project.phoneNumber || "",
-       email: project.email || "",
+      email: project.email || "",
     });
   };
 
@@ -1214,8 +1534,8 @@ export default function CreatorDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-indigo-800 to-slate-900 text-white p-6">
-      <h1 className="text-3xl font-bold mb-6">
+    <div className="min-h-screen bg-black text-white p-6">
+      <h1 className="text-3xl font-bold mb-6 text-purple-400">
         Creator Dashboard 🎯
       </h1>
 
@@ -1225,67 +1545,62 @@ export default function CreatorDashboard() {
           projects.map((p) => {
             const raised = p.fundedAmount || 0;
             const goal = p.targetAmount || 1;
-            const progress = Math.min(
-              (raised / goal) * 100,
-              100
-            );
+            const progress = Math.min((raised / goal) * 100, 100);
 
             return (
               <div
                 key={p._id}
-                className="bg-white text-black rounded-3xl shadow-xl p-5 hover:scale-[1.03] transition"
+                className="bg-black/70 border border-purple-500/30 rounded-3xl shadow-[0_0_25px_rgba(168,85,247,0.3)] p-5 hover:scale-[1.03] transition"
               >
-                <h2 className="text-lg font-semibold">
+                <h2 className="text-lg font-semibold text-purple-300">
                   {p.title}
                 </h2>
 
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-400">
                   Status:
-                  <span className="ml-1 font-semibold">
+                  <span className="ml-1 font-semibold text-white">
                     {p.status}
                   </span>
                 </p>
 
                 {/* Progress */}
                 <div className="mt-2">
-                  <div className="w-full bg-gray-200 h-2 rounded">
+                  <div className="w-full bg-gray-700 h-2 rounded">
                     <div
-                      className="bg-blue-600 h-2 rounded"
+                      className="bg-gradient-to-r from-purple-500 to-indigo-500 h-2 rounded"
                       style={{ width: `${progress}%` }}
                     ></div>
                   </div>
 
-                  <div className="flex justify-between text-xs mt-1">
+                  <div className="flex justify-between text-xs mt-1 text-gray-400">
                     <span>₹{raised}</span>
                     <span>{Math.round(progress)}%</span>
                   </div>
                 </div>
 
-                <p className="text-sm mt-2">
+                <p className="text-sm mt-2 text-gray-300">
                   Goal: ₹{goal}
                 </p>
 
-                {/* PHONE */}
-                <p className="text-sm">
-                  <b>Phone:</b>{" "}
-                  {p.phoneNumber || "N/A"}
+                <p className="text-sm text-gray-300">
+                  <b>Phone:</b> {p.phoneNumber || "N/A"}
                 </p>
-                 <p className="text-sm">
-                  <b>Email:</b>{" "}
-                  {p.email || "N/A"}
+
+                <p className="text-sm text-gray-300">
+                  <b>Email:</b> {p.email || "N/A"}
                 </p>
 
                 <div className="flex justify-between mt-3">
                   <button
                     onClick={() => openProject(p, "view")}
-                    className="bg-blue-600 text-white px-3 py-1 rounded"
+                    className="bg-purple-600 text-white px-3 py-1 rounded-lg hover:opacity-90"
                   >
                     View
                   </button>
 
                   <button
                     onClick={() => openProject(p, "edit")}
-                    className="bg-indigo-600 text-white px-3 py-1 rounded"
+                    className="bg-indigo-600 text-white px-3 py-1 rounded-lg hover:opacity-90"
                   >
                     Edit
                   </button>
@@ -1300,12 +1615,12 @@ export default function CreatorDashboard() {
 
       {/* MODAL */}
       {activeProject && (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center">
-          <div className="bg-white text-black p-6 rounded-xl w-full max-w-xl relative">
+        <div className="fixed inset-0 bg-black/70 flex justify-center items-center">
+          <div className="bg-black border border-purple-500/40 text-white p-6 rounded-2xl w-full max-w-xl relative shadow-[0_0_30px_rgba(168,85,247,0.4)]">
 
             <button
               onClick={closeModal}
-              className="absolute top-3 right-3 text-xl"
+              className="absolute top-3 right-3 text-xl text-gray-400 hover:text-white"
             >
               ✕
             </button>
@@ -1313,30 +1628,23 @@ export default function CreatorDashboard() {
             {/* VIEW MODE */}
             {mode === "view" && (
               <>
-                <h2 className="text-xl font-bold">
+                <h2 className="text-xl font-bold text-purple-400 mb-2">
                   {activeProject.title}
                 </h2>
 
-                <p>{activeProject.description}</p>
+                <p className="text-gray-300">{activeProject.description}</p>
                 <p>Category: {activeProject.category}</p>
                 <p>Status: {activeProject.status}</p>
                 <p>Target: ₹{activeProject.targetAmount}</p>
                 <p>Funded: ₹{activeProject.fundedAmount}</p>
-                <p>
-                  Deadline:{" "}
-                  {new Date(
-                    activeProject.deadline
-                  ).toDateString()}
-                </p>
 
                 <p>
-                  Phone:{" "}
-                  {activeProject.phoneNumber || "N/A"}
+                  Deadline:{" "}
+                  {new Date(activeProject.deadline).toDateString()}
                 </p>
-                  <p>
-                  email:{" "}
-                  {activeProject.email || "N/A"}
-                </p>
+
+                <p>Phone: {activeProject.phoneNumber || "N/A"}</p>
+                <p>Email: {activeProject.email || "N/A"}</p>
               </>
             )}
 
@@ -1346,40 +1654,29 @@ export default function CreatorDashboard() {
                 <input
                   value={form.title}
                   onChange={(e) =>
-                    setForm({
-                      ...form,
-                      title: e.target.value,
-                    })
+                    setForm({ ...form, title: e.target.value })
                   }
-                  className="border p-2 w-full mb-2"
+                  className="w-full p-2 mb-2 bg-black border border-purple-500/40 rounded"
                   placeholder="Title"
                 />
 
                 <textarea
                   value={form.description}
                   onChange={(e) =>
-                    setForm({
-                      ...form,
-                      description: e.target.value,
-                    })
+                    setForm({ ...form, description: e.target.value })
                   }
-                  className="border p-2 w-full mb-2"
+                  className="w-full p-2 mb-2 bg-black border border-purple-500/40 rounded"
                   placeholder="Description"
                 />
 
                 <select
                   value={form.category}
                   onChange={(e) =>
-                    setForm({
-                      ...form,
-                      category: e.target.value,
-                    })
+                    setForm({ ...form, category: e.target.value })
                   }
-                  className="border p-2 w-full mb-2"
+                  className="w-full p-2 mb-2 bg-black border border-purple-500/40 rounded"
                 >
-                  <option value="">
-                    Select Category
-                  </option>
+                  <option value="">Select Category</option>
                   {categories.map((c) => (
                     <option key={c._id} value={c.name}>
                       {c.name}
@@ -1393,12 +1690,10 @@ export default function CreatorDashboard() {
                   onChange={(e) =>
                     setForm({
                       ...form,
-                      targetAmount: Number(
-                        e.target.value
-                      ),
+                      targetAmount: Number(e.target.value),
                     })
                   }
-                  className="border p-2 w-full mb-2"
+                  className="w-full p-2 mb-2 bg-black border border-purple-500/40 rounded"
                   placeholder="Target Amount"
                 />
 
@@ -1406,48 +1701,38 @@ export default function CreatorDashboard() {
                   type="date"
                   value={
                     form.deadline
-                      ? new Date(form.deadline)
-                          .toISOString()
-                          .split("T")[0]
+                      ? new Date(form.deadline).toISOString().split("T")[0]
                       : ""
                   }
                   onChange={(e) =>
-                    setForm({
-                      ...form,
-                      deadline: e.target.value,
-                    })
+                    setForm({ ...form, deadline: e.target.value })
                   }
-                  className="border p-2 w-full mb-2"
+                  className="w-full p-2 mb-2 bg-black border border-purple-500/40 rounded"
                 />
 
                 <input
                   type="text"
                   value={form.phoneNumber}
                   onChange={(e) =>
-                    setForm({
-                      ...form,
-                      phoneNumber: e.target.value,
-                    })
+                    setForm({ ...form, phoneNumber: e.target.value })
                   }
-                  className="border p-2 w-full mb-2"
+                  className="w-full p-2 mb-2 bg-black border border-purple-500/40 rounded"
                   placeholder="Phone Number"
                 />
+
                 <input
                   type="text"
                   value={form.email}
                   onChange={(e) =>
-                    setForm({
-                      ...form,
-                      email: e.target.value,
-                    })
+                    setForm({ ...form, email: e.target.value })
                   }
-                  className="border p-2 w-full mb-2"
+                  className="w-full p-2 mb-2 bg-black border border-purple-500/40 rounded"
                   placeholder="Email"
                 />
 
                 <button
                   onClick={handleSave}
-                  className="bg-green-600 text-white px-4 py-2"
+                  className="bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 rounded-lg w-full mt-2"
                 >
                   Save
                 </button>

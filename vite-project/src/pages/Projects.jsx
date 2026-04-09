@@ -723,6 +723,255 @@
 //     </AdminLayout>
 //   );
 // }
+// import { useEffect, useState } from "react";
+// import { useSearchParams } from "react-router-dom";
+// import API from "../services/api";
+// import AdminLayout from "../components/AdminLayout";
+
+// export default function Projects() {
+//   const [projects, setProjects] = useState([]);
+//   const [categories, setCategories] = useState([]);
+//   const [search, setSearch] = useState("");
+//   const [category, setCategory] = useState("");
+//   const [sort, setSort] = useState("");
+
+//   const [investments, setInvestments] = useState([]);
+//   const [showInvestments, setShowInvestments] = useState(false);
+
+//   const [params] = useSearchParams();
+
+//   useEffect(() => {
+//     fetchProjects();
+//     fetchCategories();
+//   }, [params]);
+
+//   // ✅ Fetch Projects
+//   const fetchProjects = async () => {
+//     const res = await API.get("/admin/projects");
+//     let data = res.data.data;
+
+//     const status = params.get("status");
+//     if (status) {
+//       data = data.filter((p) => p.status === status);
+//     }
+
+//     setProjects(data);
+//   };
+
+//   // ✅ Fetch Categories
+//   const fetchCategories = async () => {
+//     const res = await API.get("/categories");
+//     setCategories(res.data.data);
+//   };
+
+//   // ✅ Approve
+//   const handleApprove = async (id) => {
+//     try {
+//       await API.put(`/admin/projects/${id}/status`, {
+//         status: "ACTIVE",
+//       });
+//       alert("Approved ✅");
+//       fetchProjects();
+//     } catch (err) {
+//       alert(err.response?.data?.message || "Error");
+//     }
+//   };
+
+//   // ✅ Reject
+//   const handleReject = async (id) => {
+//     try {
+//       await API.put(`/admin/projects/${id}/status`, {
+//         status: "FAILED",
+//       });
+//       alert("Rejected ❌");
+//       fetchProjects();
+//     } catch (err) {
+//       alert(err.response?.data?.message || "Error");
+//     }
+//   };
+
+//   // ✅ Completed
+//   const handleMarkCompleted = async (id) => {
+//     try {
+//       await API.put(`/admin/projects/${id}/status`, {
+//         status: "COMPLETED",
+//       });
+//       alert("Project marked as Completed ✅");
+//       fetchProjects();
+//     } catch (err) {
+//       alert(err.response?.data?.message || "Error");
+//     }
+//   };
+
+//   // ✅ Investments
+//   const fetchInvestments = async (id) => {
+//     const res = await API.get(`/admin/investments/${id}`);
+//     setInvestments(res.data.data);
+//     setShowInvestments(true);
+//   };
+
+//   // ✅ FILTER LOGIC
+//   const filtered = projects
+//     .filter((p) =>
+//       p.title.toLowerCase().includes(search.toLowerCase())
+//     )
+//     .filter((p) =>
+//       category ? p.category === category : true
+//     )
+//     .sort((a, b) => {
+//       if (sort === "low") return a.targetAmount - b.targetAmount;
+//       if (sort === "high") return b.targetAmount - a.targetAmount;
+//       return 0;
+//     });
+
+//   return (
+//     <AdminLayout>
+//       <h1 className="text-2xl mb-4">Projects 📁</h1>
+
+//       {/* FILTERS */}
+//       <div className="flex flex-wrap gap-3 mb-6">
+//         <input
+//           placeholder="Search..."
+//           className="p-2 text-black rounded"
+//           onChange={(e) => setSearch(e.target.value)}
+//         />
+
+//         <select
+//           className="p-2 text-black rounded"
+//           onChange={(e) => setCategory(e.target.value)}
+//         >
+//           <option value="">All Categories</option>
+//           {categories.map((c) => (
+//             <option key={c._id}>{c.name}</option>
+//           ))}
+//         </select>
+
+//         <select
+//           className="p-2 text-black rounded"
+//           onChange={(e) => setSort(e.target.value)}
+//         >
+//           <option value="">Budget</option>
+//           <option value="low">Low → High</option>
+//           <option value="high">High → Low</option>
+//         </select>
+//       </div>
+
+//       {/* PROJECT LIST */}
+//       {filtered.map((p) => (
+//         <div
+//           key={p._id}
+//           className="bg-white text-black p-4 mb-3 rounded-xl shadow"
+//         >
+//           <h2 className="font-bold">Title: {p.title}</h2>
+//           <p>Description: {p.description}</p>
+//           <p>Category: {p.category}</p>
+//           <p>Status: {p.status}</p>
+
+//           {/* ✅ PHONE */}
+//           <p>
+//             <b>Phone:</b>{" "}
+//             {p.phone || p.contactNumber || p.userId?.phone || "N/A"}
+//           </p>
+
+//           {/* ✅ EMAIL */}
+//           <p>
+//             <b>Email:</b>{" "}
+//             {p.email || p.userId?.email || "N/A"}
+//           </p>
+
+//           <p>Target Amount: ₹{p.targetAmount}</p>
+//           <p>Funded Amount: ₹{p.fundedAmount}</p>
+//           <p>
+//             Deadline:{" "}
+//             {p.deadline
+//               ? new Date(p.deadline).toDateString()
+//               : "N/A"}
+//           </p>
+
+//           {/* ✅ BUTTONS WITH DISABLE LOGIC */}
+//           <div className="mt-2 space-x-2">
+
+//             {/* APPROVE */}
+//             <button
+//               onClick={() => handleApprove(p._id)}
+//               disabled={p.status === "ACTIVE"}
+//               className={`px-3 py-1 rounded text-white ${
+//                 p.status === "ACTIVE"
+//                   ? "bg-gray-400 cursor-not-allowed"
+//                   : "bg-green-500 hover:bg-green-600"
+//               }`}
+//             >
+//               Approve
+//             </button>
+
+//             {/* REJECT */}
+//             <button
+//               onClick={() => handleReject(p._id)}
+//               disabled={p.status === "FAILED"}
+//               className={`px-3 py-1 rounded text-white ${
+//                 p.status === "FAILED"
+//                   ? "bg-gray-400 cursor-not-allowed"
+//                   : "bg-red-500 hover:bg-red-600"
+//               }`}
+//             >
+//               Reject
+//             </button>
+
+//             {/* COMPLETED */}
+//             <button
+//               onClick={() => handleMarkCompleted(p._id)}
+//               disabled={p.status === "COMPLETED"}
+//               className={`px-3 py-1 rounded text-white ${
+//                 p.status === "COMPLETED"
+//                   ? "bg-gray-400 cursor-not-allowed"
+//                   : "bg-yellow-500 hover:bg-yellow-600"
+//               }`}
+//             >
+//               Completed
+//             </button>
+
+//             {/* INVESTMENTS */}
+//             <button
+//               onClick={() => fetchInvestments(p._id)}
+//               className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
+//             >
+//               Investments
+//             </button>
+
+//           </div>
+//         </div>
+//       ))}
+
+//       {/* INVESTMENT MODAL */}
+//       {showInvestments && (
+//         <div className="fixed inset-0 bg-black/60 flex justify-center items-center">
+//           <div className="bg-white text-black p-5 rounded w-[400px]">
+//             <h2 className="text-lg font-bold mb-3">
+//               Investments
+//             </h2>
+
+//             {investments.length > 0 ? (
+//               investments.map((i) => (
+//                 <p key={i._id}>
+//                   {i.investorId?.name} - ₹{i.amount}
+//                 </p>
+//               ))
+//             ) : (
+//               <p>No investments found</p>
+//             )}
+
+//             <button
+//               onClick={() => setShowInvestments(false)}
+//               className="mt-4 bg-black text-white px-3 py-1"
+//             >
+//               Close
+//             </button>
+//           </div>
+//         </div>
+//       )}
+//     </AdminLayout>
+//   );
+// }
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import API from "../services/api";
@@ -745,7 +994,6 @@ export default function Projects() {
     fetchCategories();
   }, [params]);
 
-  // ✅ Fetch Projects
   const fetchProjects = async () => {
     const res = await API.get("/admin/projects");
     let data = res.data.data;
@@ -758,13 +1006,11 @@ export default function Projects() {
     setProjects(data);
   };
 
-  // ✅ Fetch Categories
   const fetchCategories = async () => {
     const res = await API.get("/categories");
     setCategories(res.data.data);
   };
 
-  // ✅ Approve
   const handleApprove = async (id) => {
     try {
       await API.put(`/admin/projects/${id}/status`, {
@@ -777,7 +1023,6 @@ export default function Projects() {
     }
   };
 
-  // ✅ Reject
   const handleReject = async (id) => {
     try {
       await API.put(`/admin/projects/${id}/status`, {
@@ -790,7 +1035,6 @@ export default function Projects() {
     }
   };
 
-  // ✅ Completed
   const handleMarkCompleted = async (id) => {
     try {
       await API.put(`/admin/projects/${id}/status`, {
@@ -803,14 +1047,12 @@ export default function Projects() {
     }
   };
 
-  // ✅ Investments
   const fetchInvestments = async (id) => {
     const res = await API.get(`/admin/investments/${id}`);
     setInvestments(res.data.data);
     setShowInvestments(true);
   };
 
-  // ✅ FILTER LOGIC
   const filtered = projects
     .filter((p) =>
       p.title.toLowerCase().includes(search.toLowerCase())
@@ -826,18 +1068,18 @@ export default function Projects() {
 
   return (
     <AdminLayout>
-      <h1 className="text-2xl mb-4">Projects 📁</h1>
+      <h1 className="text-3xl font-bold mb-6">Projects 📁</h1>
 
-      {/* FILTERS */}
-      <div className="flex flex-wrap gap-3 mb-6">
+      {/* 🔍 FILTERS */}
+      <div className="flex flex-wrap gap-4 mb-6 bg-white/10 backdrop-blur-md p-4 rounded-2xl shadow">
         <input
           placeholder="Search..."
-          className="p-2 text-black rounded"
+          className="p-3 rounded-xl text-black outline-none w-full sm:w-auto"
           onChange={(e) => setSearch(e.target.value)}
         />
 
         <select
-          className="p-2 text-black rounded"
+          className="p-3 rounded-xl text-black"
           onChange={(e) => setCategory(e.target.value)}
         >
           <option value="">All Categories</option>
@@ -847,7 +1089,7 @@ export default function Projects() {
         </select>
 
         <select
-          className="p-2 text-black rounded"
+          className="p-3 rounded-xl text-black"
           onChange={(e) => setSort(e.target.value)}
         >
           <option value="">Budget</option>
@@ -856,116 +1098,127 @@ export default function Projects() {
         </select>
       </div>
 
-      {/* PROJECT LIST */}
-      {filtered.map((p) => (
-        <div
-          key={p._id}
-          className="bg-white text-black p-4 mb-3 rounded-xl shadow"
-        >
-          <h2 className="font-bold">Title: {p.title}</h2>
-          <p>Description: {p.description}</p>
-          <p>Category: {p.category}</p>
-          <p>Status: {p.status}</p>
+      {/* 📦 PROJECT CARDS */}
+      <div className="grid md:grid-cols-2 gap-6">
+        {filtered.map((p) => (
+          <div
+            key={p._id}
+            className="bg-white/95 text-black p-6 rounded-3xl shadow-xl hover:scale-[1.02] transition"
+          >
+            <h2 className="font-bold text-lg mb-1">
+              {p.title}
+            </h2>
 
-          {/* ✅ PHONE */}
-          <p>
-            <b>Phone:</b>{" "}
-            {p.phone || p.contactNumber || p.userId?.phone || "N/A"}
-          </p>
+            <p className="text-sm text-gray-600 mb-2 line-clamp-2">
+              {p.description}
+            </p>
 
-          {/* ✅ EMAIL */}
-          <p>
-            <b>Email:</b>{" "}
-            {p.email || p.userId?.email || "N/A"}
-          </p>
+            <div className="grid grid-cols-2 gap-2 text-sm mb-3">
+              <p><b>Category:</b> {p.category}</p>
+              <p><b>Status:</b> {p.status}</p>
+              <p><b>Target:</b> ₹{p.targetAmount}</p>
+              <p><b>Funded:</b> ₹{p.fundedAmount}</p>
+            </div>
 
-          <p>Target Amount: ₹{p.targetAmount}</p>
-          <p>Funded Amount: ₹{p.fundedAmount}</p>
-          <p>
-            Deadline:{" "}
-            {p.deadline
-              ? new Date(p.deadline).toDateString()
-              : "N/A"}
-          </p>
+            <p className="text-sm">
+              <b>Phone:</b>{" "}
+              {p.phone || p.contactNumber || p.userId?.phone || "N/A"}
+            </p>
 
-          {/* ✅ BUTTONS WITH DISABLE LOGIC */}
-          <div className="mt-2 space-x-2">
+            <p className="text-sm mb-2">
+              <b>Email:</b>{" "}
+              {p.email || p.userId?.email || "N/A"}
+            </p>
 
-            {/* APPROVE */}
-            <button
-              onClick={() => handleApprove(p._id)}
-              disabled={p.status === "ACTIVE"}
-              className={`px-3 py-1 rounded text-white ${
-                p.status === "ACTIVE"
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-green-500 hover:bg-green-600"
-              }`}
-            >
-              Approve
-            </button>
+            <p className="text-xs text-gray-500 mb-3">
+              Deadline:{" "}
+              {p.deadline
+                ? new Date(p.deadline).toDateString()
+                : "N/A"}
+            </p>
 
-            {/* REJECT */}
-            <button
-              onClick={() => handleReject(p._id)}
-              disabled={p.status === "FAILED"}
-              className={`px-3 py-1 rounded text-white ${
-                p.status === "FAILED"
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-red-500 hover:bg-red-600"
-              }`}
-            >
-              Reject
-            </button>
+            {/* ⚡ BUTTONS */}
+            <div className="flex flex-wrap gap-2">
 
-            {/* COMPLETED */}
-            <button
-              onClick={() => handleMarkCompleted(p._id)}
-              disabled={p.status === "COMPLETED"}
-              className={`px-3 py-1 rounded text-white ${
-                p.status === "COMPLETED"
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-yellow-500 hover:bg-yellow-600"
-              }`}
-            >
-              Completed
-            </button>
+              <button
+                onClick={() => handleApprove(p._id)}
+                disabled={p.status === "ACTIVE"}
+                className={`px-3 py-2 rounded-lg text-white text-sm ${
+                  p.status === "ACTIVE"
+                    ? "bg-gray-400"
+                    : "bg-green-500 hover:bg-green-600"
+                }`}
+              >
+                Approve
+              </button>
 
-            {/* INVESTMENTS */}
-            <button
-              onClick={() => fetchInvestments(p._id)}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
-            >
-              Investments
-            </button>
+              <button
+                onClick={() => handleReject(p._id)}
+                disabled={p.status === "FAILED"}
+                className={`px-3 py-2 rounded-lg text-white text-sm ${
+                  p.status === "FAILED"
+                    ? "bg-gray-400"
+                    : "bg-red-500 hover:bg-red-600"
+                }`}
+              >
+                Reject
+              </button>
 
+              <button
+                onClick={() => handleMarkCompleted(p._id)}
+                disabled={p.status === "COMPLETED"}
+                className={`px-3 py-2 rounded-lg text-sm ${
+                  p.status === "COMPLETED"
+                    ? "bg-gray-400 text-white"
+                    : "bg-yellow-400 text-black hover:bg-yellow-500"
+                }`}
+              >
+                Completed
+              </button>
+
+              <button
+                onClick={() => fetchInvestments(p._id)}
+                className="px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm"
+              >
+                Investments
+              </button>
+
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
 
-      {/* INVESTMENT MODAL */}
+      {/* 💰 MODAL */}
       {showInvestments && (
-        <div className="fixed inset-0 bg-black/60 flex justify-center items-center">
-          <div className="bg-white text-black p-5 rounded w-[400px]">
-            <h2 className="text-lg font-bold mb-3">
-              Investments
+        <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50">
+          <div className="bg-white/95 backdrop-blur-md text-black p-6 rounded-2xl w-[400px] shadow-xl">
+
+            <h2 className="text-lg font-bold mb-4">
+              Investments 💰
             </h2>
 
             {investments.length > 0 ? (
               investments.map((i) => (
-                <p key={i._id}>
-                  {i.investorId?.name} - ₹{i.amount}
-                </p>
+                <div
+                  key={i._id}
+                  className="border-b py-2 text-sm"
+                >
+                  {i.investorId?.name} — ₹{i.amount}
+                </div>
               ))
             ) : (
-              <p>No investments found</p>
+              <p className="text-gray-500 text-sm">
+                No investments found
+              </p>
             )}
 
             <button
               onClick={() => setShowInvestments(false)}
-              className="mt-4 bg-black text-white px-3 py-1"
+              className="mt-4 w-full bg-gray-800 text-white py-2 rounded-lg hover:bg-black"
             >
               Close
             </button>
+
           </div>
         </div>
       )}

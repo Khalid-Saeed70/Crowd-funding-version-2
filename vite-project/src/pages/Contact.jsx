@@ -98,6 +98,182 @@
 // // };
 
 // // export default Contact;
+// import { useState } from "react";
+// import {
+//   FaEnvelope,
+//   FaPhoneAlt,
+//   FaFacebook,
+//   FaInstagram,
+//   FaWhatsapp,
+// } from "react-icons/fa";
+// import emailjs from "@emailjs/browser";
+
+// export default function Contact() {
+//   // 🔹 Contact Cards Data
+//   const contacts = [
+//     {
+//       icon: <FaEnvelope />,
+//       title: "Email",
+//       text: "support@crowdfund.com",
+//       link: "mailto:support@crowdfund.com",
+//       color: "text-red-500",
+//     },
+//     {
+//       icon: <FaPhoneAlt />,
+//       title: "Phone",
+//       text: "+91 9876543210",
+//       link: "tel:+919876543210",
+//       color: "text-green-600",
+//     },
+//     {
+//       icon: <FaWhatsapp />,
+//       title: "WhatsApp",
+//       text: "Chat with us",
+//       link: "https://wa.me/919876543210",
+//       color: "text-green-500",
+//     },
+//     {
+//       icon: <FaFacebook />,
+//       title: "Facebook",
+//       text: "@crowdfund",
+//       link: "#",
+//       color: "text-blue-600",
+//     },
+//     {
+//       icon: <FaInstagram />,
+//       title: "Instagram",
+//       text: "@crowdfund_app",
+//       link: "#",
+//       color: "text-pink-500",
+//     },
+//   ];
+
+//   // 🔹 Form State
+//   const [form, setForm] = useState({
+//     name: "",
+//     email: "",
+//     message: "",
+//   });
+
+//   // 🔹 Send Email
+//   const sendEmail = (e) => {
+//     e.preventDefault();
+
+//     emailjs
+//       .send(
+//         "YOUR_SERVICE_ID",     // 👈 replace
+//         "YOUR_TEMPLATE_ID",    // 👈 replace
+//         form,
+//         "YOUR_PUBLIC_KEY"      // 👈 replace
+//       )
+//       .then(() => {
+//         alert("Message sent ✅");
+//         setForm({ name: "", email: "", message: "" });
+//       })
+//       .catch(() => {
+//         alert("Failed ❌");
+//       });
+//   };
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-indigo-800 to-slate-900 text-white py-14 px-6">
+//       <div className="max-w-6xl mx-auto text-center">
+
+//         {/* 🔷 Heading */}
+//         <h1 className="text-4xl font-bold mb-3 tracking-wide">
+//           Contact Us
+//         </h1>
+//         <p className="text-blue-200 mb-10 text-sm md:text-base">
+//           We’d love to hear from you! Reach out for support, queries or project verification.
+//         </p>
+
+//         {/* 📦 Contact Cards */}
+//         <div className="grid md:grid-cols-3 sm:grid-cols-2 gap-6">
+//           {contacts.map((item, index) => (
+//             <a
+//               key={index}
+//               href={item.link}
+//               target="_blank"
+//               rel="noreferrer"
+//               className="bg-white text-black rounded-2xl p-6 shadow-xl 
+//               hover:scale-105 hover:shadow-2xl transition duration-300 
+//               flex flex-col items-center group"
+//             >
+//               <div
+//                 className={`text-3xl mb-3 ${item.color} group-hover:scale-110 transition`}
+//               >
+//                 {item.icon}
+//               </div>
+
+//               <h3 className="text-lg font-semibold mb-1">
+//                 {item.title}
+//               </h3>
+
+//               <p className="text-gray-600 text-sm">
+//                 {item.text}
+//               </p>
+//             </a>
+//           ))}
+//         </div>
+
+//         {/* ✉️ Send Message Form */}
+//         <div className="bg-white text-black rounded-3xl p-8 shadow-xl max-w-xl mx-auto mt-12">
+//           <h2 className="text-2xl font-bold mb-4">Send Message</h2>
+
+//           <form onSubmit={sendEmail} className="space-y-4">
+//             <input
+//               type="text"
+//               placeholder="Your Name"
+//               value={form.name}
+//               onChange={(e) =>
+//                 setForm({ ...form, name: e.target.value })
+//               }
+//               className="w-full p-3 rounded-xl bg-gray-100 outline-none"
+//               required
+//             />
+
+//             <input
+//               type="email"
+//               placeholder="Your Email"
+//               value={form.email}
+//               onChange={(e) =>
+//                 setForm({ ...form, email: e.target.value })
+//               }
+//               className="w-full p-3 rounded-xl bg-gray-100 outline-none"
+//               required
+//             />
+
+//             <textarea
+//               placeholder="Your Message"
+//               value={form.message}
+//               onChange={(e) =>
+//                 setForm({ ...form, message: e.target.value })
+//               }
+//               className="w-full p-3 rounded-xl bg-gray-100 outline-none"
+//               rows="4"
+//               required
+//             />
+
+//             <button className="w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition">
+//               Send Message
+//             </button>
+//           </form>
+//         </div>
+
+//         {/* 💬 Extra Section */}
+//         <div className="mt-14 bg-white text-black rounded-3xl p-8 shadow-xl">
+//           <h2 className="text-2xl font-bold mb-2">
+//             Need Help?
+//           </h2>
+//           <p className="text-gray-600 text-sm md:text-base">
+//             If you want to verify any project or need help, feel free to contact us anytime.
+//           </p>
+//         </div>
+
+//       </div>
+//     </div>
+//   );
+// }
 import { useState } from "react";
 import {
   FaEnvelope,
@@ -109,6 +285,7 @@ import {
 import emailjs from "@emailjs/browser";
 
 export default function Contact() {
+
   // 🔹 Contact Cards Data
   const contacts = [
     {
@@ -116,35 +293,30 @@ export default function Contact() {
       title: "Email",
       text: "support@crowdfund.com",
       link: "mailto:support@crowdfund.com",
-      color: "text-red-500",
     },
     {
       icon: <FaPhoneAlt />,
       title: "Phone",
       text: "+91 9876543210",
       link: "tel:+919876543210",
-      color: "text-green-600",
     },
     {
       icon: <FaWhatsapp />,
       title: "WhatsApp",
       text: "Chat with us",
       link: "https://wa.me/919876543210",
-      color: "text-green-500",
     },
     {
       icon: <FaFacebook />,
       title: "Facebook",
       text: "@crowdfund",
       link: "#",
-      color: "text-blue-600",
     },
     {
       icon: <FaInstagram />,
       title: "Instagram",
       text: "@crowdfund_app",
       link: "#",
-      color: "text-pink-500",
     },
   ];
 
@@ -155,16 +327,20 @@ export default function Contact() {
     message: "",
   });
 
+  // 🔹 Neon Input Style
+  const inputStyle =
+    "w-full p-3 rounded-xl bg-black/40 border border-purple-500/40 text-white outline-none focus:ring-2 focus:ring-purple-400 placeholder-gray-400";
+
   // 🔹 Send Email
   const sendEmail = (e) => {
     e.preventDefault();
 
     emailjs
       .send(
-        "YOUR_SERVICE_ID",     // 👈 replace
-        "YOUR_TEMPLATE_ID",    // 👈 replace
+        "YOUR_SERVICE_ID",
+        "YOUR_TEMPLATE_ID",
         form,
-        "YOUR_PUBLIC_KEY"      // 👈 replace
+        "YOUR_PUBLIC_KEY"
       )
       .then(() => {
         alert("Message sent ✅");
@@ -176,14 +352,14 @@ export default function Contact() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-indigo-800 to-slate-900 text-white py-14 px-6">
+    <div className="min-h-screen bg-black text-white py-14 px-6">
       <div className="max-w-6xl mx-auto text-center">
 
         {/* 🔷 Heading */}
-        <h1 className="text-4xl font-bold mb-3 tracking-wide">
+        <h1 className="text-4xl font-bold mb-3 text-purple-400">
           Contact Us
         </h1>
-        <p className="text-blue-200 mb-10 text-sm md:text-base">
+        <p className="text-gray-400 mb-10 text-sm md:text-base">
           We’d love to hear from you! Reach out for support, queries or project verification.
         </p>
 
@@ -195,13 +371,12 @@ export default function Contact() {
               href={item.link}
               target="_blank"
               rel="noreferrer"
-              className="bg-white text-black rounded-2xl p-6 shadow-xl 
-              hover:scale-105 hover:shadow-2xl transition duration-300 
-              flex flex-col items-center group"
+              className="bg-black/60 border border-purple-500/30 rounded-2xl p-6 
+              shadow-[0_0_20px_rgba(168,85,247,0.2)]
+              hover:scale-105 hover:shadow-[0_0_25px_rgba(168,85,247,0.4)] 
+              transition duration-300 flex flex-col items-center"
             >
-              <div
-                className={`text-3xl mb-3 ${item.color} group-hover:scale-110 transition`}
-              >
+              <div className="text-3xl mb-3 text-purple-400">
                 {item.icon}
               </div>
 
@@ -209,7 +384,7 @@ export default function Contact() {
                 {item.title}
               </h3>
 
-              <p className="text-gray-600 text-sm">
+              <p className="text-gray-400 text-sm">
                 {item.text}
               </p>
             </a>
@@ -217,8 +392,10 @@ export default function Contact() {
         </div>
 
         {/* ✉️ Send Message Form */}
-        <div className="bg-white text-black rounded-3xl p-8 shadow-xl max-w-xl mx-auto mt-12">
-          <h2 className="text-2xl font-bold mb-4">Send Message</h2>
+        <div className="bg-black/70 border border-purple-500/30 backdrop-blur-xl rounded-3xl p-8 shadow-[0_0_30px_rgba(168,85,247,0.25)] max-w-xl mx-auto mt-12">
+          <h2 className="text-2xl font-bold mb-4 text-purple-400">
+            Send Message
+          </h2>
 
           <form onSubmit={sendEmail} className="space-y-4">
             <input
@@ -228,7 +405,7 @@ export default function Contact() {
               onChange={(e) =>
                 setForm({ ...form, name: e.target.value })
               }
-              className="w-full p-3 rounded-xl bg-gray-100 outline-none"
+              className={inputStyle}
               required
             />
 
@@ -239,7 +416,7 @@ export default function Contact() {
               onChange={(e) =>
                 setForm({ ...form, email: e.target.value })
               }
-              className="w-full p-3 rounded-xl bg-gray-100 outline-none"
+              className={inputStyle}
               required
             />
 
@@ -249,23 +426,23 @@ export default function Contact() {
               onChange={(e) =>
                 setForm({ ...form, message: e.target.value })
               }
-              className="w-full p-3 rounded-xl bg-gray-100 outline-none"
+              className={inputStyle}
               rows="4"
               required
             />
 
-            <button className="w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition">
-              Send Message
+            <button className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 shadow-[0_0_15px_#8b5cf6] font-semibold">
+              Send Message 🚀
             </button>
           </form>
         </div>
 
         {/* 💬 Extra Section */}
-        <div className="mt-14 bg-white text-black rounded-3xl p-8 shadow-xl">
-          <h2 className="text-2xl font-bold mb-2">
+        <div className="mt-14 bg-black/70 border border-purple-500/30 rounded-3xl p-8 shadow-[0_0_25px_rgba(168,85,247,0.25)]">
+          <h2 className="text-2xl font-bold mb-2 text-purple-400">
             Need Help?
           </h2>
-          <p className="text-gray-600 text-sm md:text-base">
+          <p className="text-gray-400 text-sm md:text-base">
             If you want to verify any project or need help, feel free to contact us anytime.
           </p>
         </div>

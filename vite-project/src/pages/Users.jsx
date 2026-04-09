@@ -327,6 +327,110 @@
 //     </AdminLayout>
 //   );
 // }
+// import { useEffect, useState } from "react";
+// import API from "../services/api";
+// import AdminLayout from "../components/AdminLayout";
+
+// export default function Users() {
+//   const [users, setUsers] = useState([]);
+//   const [roleFilter, setRoleFilter] = useState("");
+
+//   // Fetch all users
+//   const fetchUsers = async () => {
+//     try {
+//       const res = await API.get("/admin/users"); // ✅ corrected admin path
+//       setUsers(res.data.data);
+//     } catch (err) {
+//       console.error(err);
+//       alert(err.response?.data?.message || "Error fetching users");
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchUsers();
+//   }, []);
+
+//   // Toggle block/unblock a user
+//   const toggleBlock = async (id) => {
+//     try {
+//       await API.put(`/admin/users/${id}/block`); // ✅ admin route
+//       // Update local state immediately for UI feedback
+//       setUsers((prev) =>
+//         prev.map((u) => (u._id === id ? { ...u, isBlocked: !u.isBlocked } : u))
+//       );
+//     } catch (err) {
+//       console.error(err);
+//       alert(err.response?.data?.message || "Error toggling block");
+//     }
+//   };
+
+//   // Filter users by role
+//   const filteredUsers = users.filter((u) =>
+//     roleFilter ? u.role === roleFilter : true
+//   );
+
+//   return (
+//     <AdminLayout>
+//       <h1 className="text-2xl mb-4 text-white">Users 👥</h1>
+
+//       {/* Role Filter */}
+//       <div className="mb-4">
+//         <select
+//           value={roleFilter}
+//           onChange={(e) => setRoleFilter(e.target.value)}
+//           className="p-2 rounded text-black"
+//         >
+//           <option value="">All Users</option>
+//           <option value="ADMIN">Admin</option>
+//           <option value="CREATOR">Creator</option>
+//           <option value="INVESTOR">Investor</option>
+//         </select>
+//       </div>
+
+//       {/* Users List */}
+//       {filteredUsers.length > 0 ? (
+//         filteredUsers.map((u) => (
+//           <div
+//             key={u._id}
+//             className="bg-white text-black p-4 mb-3 rounded-xl shadow"
+//           >
+//             <p className="font-semibold">
+//               {u.name} ({u.email})
+//             </p>
+
+//             <p className="text-sm">
+//               Role: <span className="font-medium">{u.role}</span>
+//             </p>
+
+//             <p className="text-sm">
+//               Status:{" "}
+//               <span
+//                 className={`font-semibold ${
+//                   u.isBlocked ? "text-red-600" : "text-green-600"
+//                 }`}
+//               >
+//                 {u.isBlocked ? "Blocked" : "Active"}
+//               </span>
+//             </p>
+
+//             <button
+//               onClick={() => toggleBlock(u._id)}
+//               className={`mt-2 px-3 py-1 rounded text-white ${
+//                 u.isBlocked
+//                   ? "bg-green-600 hover:bg-green-700"
+//                   : "bg-red-500 hover:bg-red-600"
+//               }`}
+//             >
+//               {u.isBlocked ? "Unblock" : "Block"}
+//             </button>
+//           </div>
+//         ))
+//       ) : (
+//         <p className="text-white">No users found</p>
+//       )}
+//     </AdminLayout>
+//   );
+// }
 import { useEffect, useState } from "react";
 import API from "../services/api";
 import AdminLayout from "../components/AdminLayout";
@@ -335,10 +439,9 @@ export default function Users() {
   const [users, setUsers] = useState([]);
   const [roleFilter, setRoleFilter] = useState("");
 
-  // Fetch all users
   const fetchUsers = async () => {
     try {
-      const res = await API.get("/admin/users"); // ✅ corrected admin path
+      const res = await API.get("/admin/users");
       setUsers(res.data.data);
     } catch (err) {
       console.error(err);
@@ -350,13 +453,13 @@ export default function Users() {
     fetchUsers();
   }, []);
 
-  // Toggle block/unblock a user
   const toggleBlock = async (id) => {
     try {
-      await API.put(`/admin/users/${id}/block`); // ✅ admin route
-      // Update local state immediately for UI feedback
+      await API.put(`/admin/users/${id}/block`);
       setUsers((prev) =>
-        prev.map((u) => (u._id === id ? { ...u, isBlocked: !u.isBlocked } : u))
+        prev.map((u) =>
+          u._id === id ? { ...u, isBlocked: !u.isBlocked } : u
+        )
       );
     } catch (err) {
       console.error(err);
@@ -364,21 +467,22 @@ export default function Users() {
     }
   };
 
-  // Filter users by role
   const filteredUsers = users.filter((u) =>
     roleFilter ? u.role === roleFilter : true
   );
 
   return (
     <AdminLayout>
-      <h1 className="text-2xl mb-4 text-white">Users 👥</h1>
+      <h1 className="text-3xl font-bold mb-6 text-white">
+        Users Management 👥
+      </h1>
 
-      {/* Role Filter */}
-      <div className="mb-4">
+      {/* Filter */}
+      <div className="mb-6">
         <select
           value={roleFilter}
           onChange={(e) => setRoleFilter(e.target.value)}
-          className="p-2 rounded text-black"
+          className="px-4 py-2 rounded-xl bg-white/90 text-black shadow focus:ring-2 focus:ring-indigo-500 outline-none"
         >
           <option value="">All Users</option>
           <option value="ADMIN">Admin</option>
@@ -387,44 +491,56 @@ export default function Users() {
         </select>
       </div>
 
-      {/* Users List */}
+      {/* Users Grid */}
       {filteredUsers.length > 0 ? (
-        filteredUsers.map((u) => (
-          <div
-            key={u._id}
-            className="bg-white text-black p-4 mb-3 rounded-xl shadow"
-          >
-            <p className="font-semibold">
-              {u.name} ({u.email})
-            </p>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredUsers.map((u) => (
+            <div
+              key={u._id}
+              className="bg-white/95 backdrop-blur-md text-black p-5 rounded-3xl shadow-xl hover:scale-[1.03] transition-all duration-300 border border-white/40"
+            >
+              {/* Name */}
+              <h2 className="text-lg font-semibold mb-1">
+                {u.name}
+              </h2>
 
-            <p className="text-sm">
-              Role: <span className="font-medium">{u.role}</span>
-            </p>
+              <p className="text-sm text-gray-600 mb-2">
+                {u.email}
+              </p>
 
-            <p className="text-sm">
-              Status:{" "}
-              <span
-                className={`font-semibold ${
-                  u.isBlocked ? "text-red-600" : "text-green-600"
+              {/* Role Badge */}
+              <span className="inline-block text-xs px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 font-medium mb-2">
+                {u.role}
+              </span>
+
+              {/* Status */}
+              <p className="text-sm mb-3">
+                Status:{" "}
+                <span
+                  className={`font-semibold ${
+                    u.isBlocked
+                      ? "text-red-600"
+                      : "text-green-600"
+                  }`}
+                >
+                  {u.isBlocked ? "Blocked ❌" : "Active ✅"}
+                </span>
+              </p>
+
+              {/* Button */}
+              <button
+                onClick={() => toggleBlock(u._id)}
+                className={`w-full py-2 rounded-xl font-medium shadow ${
+                  u.isBlocked
+                    ? "bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700"
+                    : "bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700"
                 }`}
               >
-                {u.isBlocked ? "Blocked" : "Active"}
-              </span>
-            </p>
-
-            <button
-              onClick={() => toggleBlock(u._id)}
-              className={`mt-2 px-3 py-1 rounded text-white ${
-                u.isBlocked
-                  ? "bg-green-600 hover:bg-green-700"
-                  : "bg-red-500 hover:bg-red-600"
-              }`}
-            >
-              {u.isBlocked ? "Unblock" : "Block"}
-            </button>
-          </div>
-        ))
+                {u.isBlocked ? "Unblock" : "Block"}
+              </button>
+            </div>
+          ))}
+        </div>
       ) : (
         <p className="text-white">No users found</p>
       )}
