@@ -2240,6 +2240,9 @@ export default function Dashboard() {
         </div>
       )}
 
+
+
+
       {/* PROJECT MODAL */}
       {modalType && (
         <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
